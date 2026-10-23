@@ -10,6 +10,7 @@ AI 로컬 어시스턴트 고도화 백엔드 서버 (FastAPI v2.1)
 import os
 import json
 import time
+import hashlib
 from typing import List, Optional, Dict, Any
 
 from fastapi import FastAPI, Request, HTTPException, status
@@ -47,7 +48,7 @@ _cached_groq_client: Optional[Groq] = None
 
 
 def get_active_groq_client() -> Optional[Groq]:
-    """런타임에 갱신된 Groq API 키를 바탕으로 클라이언트 반환"""
+    """런타임에 갱신된 Groq API 키를 바탕으로 클라이언트 반환 (비밀키 로그 노출 차단)"""
     global _cached_groq_key, _cached_groq_client
     current_key = settings_mgr.get_groq_key()
 
@@ -60,7 +61,8 @@ def get_active_groq_client() -> Optional[Groq]:
         try:
             _cached_groq_client = Groq(api_key=current_key)
             _cached_groq_key = current_key
-            print(f"[Groq Runtime] 클라이언트 갱신 완료 (Key: {current_key[:4]}...{current_key[-4:]})")
+            key_fp = hashlib.sha256(current_key.encode("utf-8")).hexdigest()[:8]
+            print(f"[Groq Runtime] 클라이언트 갱신 완료 (Model: {settings_mgr.get_groq_model()}, KeyFingerprint: {key_fp})")
         except Exception as e:
             print(f"[Groq Runtime Warning] 클라이언트 생성 실패: {e}")
             _cached_groq_client = None
@@ -130,6 +132,36 @@ class TestConnectionRequest(BaseModel):
 # Settings API Endpoints (PHASE 4)
 # ==========================================
 
+# In-memory sliding window rate limiter for settings mutation endpoints (IP-based)
+_rate_limit_records: Dict[str, List[float]] = {}
+
+
+def verify_settings_security(request: Request):
+    """설정 변경 및 테스트 엔드포인트 보안 검증 (도메인, CSRF, Rate Limiting)"""
+    # 1. Rate Limiting: 60초당 최대 20회 제한
+    client_ip = request.client.host if request.client else "127.0.0.1"
+    now = time.time()
+    history = _rate_limit_records.get(client_ip, [])
+    history = [t for t in history if now - t < 60]
+    if len(history) >= 20:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="설정 변경 및 테스트 요청 빈도가 너무 높습니다. 1분 후 다시 시도해 주세요."
+        )
+    history.append(now)
+    _rate_limit_records[client_ip] = history
+
+    # 2. Host 및 Origin 검증 (로컬 단일 사용자 환경 보호)
+    origin = request.headers.get("origin") or request.headers.get("referer") or ""
+    if origin:
+        is_allowed = any(h in origin for h in ("localhost", "127.0.0.1", "testserver"))
+        if not is_allowed:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="허가되지 않은 외부 도메인의 설정 요청이 거부되었습니다."
+            )
+
+
 @app.get("/api/settings/status")
 def get_settings_status():
     """모든 API 연결 상태 및 마스킹된 설정 요약 조회 (비밀키 원문 절대 미노출)"""
@@ -137,15 +169,23 @@ def get_settings_status():
 
 
 @app.post("/api/settings/credentials")
-async def set_credentials(req: SetCredentialRequest):
-    """API 키 및 모델을 서버에 안전하게 등록/갱신"""
+async def set_credentials(req: SetCredentialRequest, request: Request):
+    """API 키 및 모델을 서버에 안전하게 등록/갱신 (AES-256 암호화 저장)"""
+    verify_settings_security(request)
+
     if req.provider not in ("groq", "kakao_rest", "kakao_js"):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"지원하지 않는 제공자입니다: {req.provider}"
         )
 
-    settings_mgr.set_credential(provider=req.provider, key=req.key, model=req.model)
+    try:
+        settings_mgr.set_credential(provider=req.provider, key=req.key, model=req.model)
+    except ValueError as ve:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(ve)
+        )
 
     # Groq인 경우 즉시 연결 테스트 수행
     test_result = None
@@ -163,8 +203,10 @@ async def set_credentials(req: SetCredentialRequest):
 
 
 @app.delete("/api/settings/credentials/{provider}")
-def delete_credential(provider: str):
+def delete_credential(provider: str, request: Request):
     """지정된 API 키 삭제 및 연결 상태 초기화"""
+    verify_settings_security(request)
+
     if provider not in ("groq", "kakao_rest", "kakao_js"):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -180,8 +222,10 @@ def delete_credential(provider: str):
 
 
 @app.post("/api/settings/test-connection")
-async def test_connection(req: TestConnectionRequest):
+async def test_connection(req: TestConnectionRequest, request: Request):
     """API 키 유효성 및 네트워크 연결 상태 실시간 진단"""
+    verify_settings_security(request)
+
     if req.provider == "groq":
         return await settings_mgr.test_groq_connection(key_to_test=req.key, model=req.model)
     elif req.provider == "kakao_rest":

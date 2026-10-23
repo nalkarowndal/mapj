@@ -36,6 +36,28 @@ export const ChatMessageItem: React.FC<ChatMessageItemProps> = ({
     }
   };
 
+  // Deterministic timestamp formatter (Asia/Seoul timezone, ko-KR locale)
+  const formattedTime = React.useMemo(() => {
+    if (
+      typeof message.timestamp !== "number" ||
+      isNaN(message.timestamp) ||
+      message.timestamp <= 0
+    ) {
+      return null;
+    }
+    try {
+      const formatter = new Intl.DateTimeFormat("ko-KR", {
+        timeZone: "Asia/Seoul",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      });
+      return formatter.format(new Date(message.timestamp));
+    } catch {
+      return null;
+    }
+  }, [message.timestamp]);
+
   return (
     <div
       className={`flex items-start gap-2.5 sm:gap-3 ${
@@ -132,15 +154,9 @@ export const ChatMessageItem: React.FC<ChatMessageItemProps> = ({
         </div>
 
         {/* Timestamp */}
-        {message.timestamp && (
-          <span
-            className="text-[11px] text-slate-500 mt-1 px-1"
-            suppressHydrationWarning
-          >
-            {new Date(message.timestamp).toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
+        {formattedTime && (
+          <span className="text-[11px] text-slate-500 mt-1 px-1">
+            {formattedTime}
           </span>
         )}
       </div>

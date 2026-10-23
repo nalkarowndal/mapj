@@ -31,13 +31,11 @@ interface ChatState {
 }
 
 const initialSessionId = "session-initial";
-const initialTimestamp = 1729648800000;
 const initialMessages: ChatMessage[] = [
   {
     id: "init-1",
     text: "안녕하세요! 서울 동북권 맞춤형 **AI 로컬 어시스턴트**입니다. 🤖\n\n선택하신 자치구의 **맛집, 카페, 학원가, 문화 명소**를 AI와 실시간 인터랙티브 지도로 탐색해 보세요. 아래 추천 질문을 누르시거나 직접 물어보세요!",
     sender: "ai",
-    timestamp: initialTimestamp,
     district: "노원구",
   },
 ];
@@ -48,8 +46,8 @@ const initialSession: FullSession = {
   district: "노원구",
   messages: initialMessages,
   places: [],
-  createdAt: initialTimestamp,
-  updatedAt: initialTimestamp,
+  createdAt: 0,
+  updatedAt: 0,
 };
 
 const initialState: ChatState = {
@@ -182,21 +180,24 @@ export const chatSlice = createSlice({
       state.settingsStatus = action.payload;
     },
     // [Bug 1-11 해결]: 새 대화 생성 및 기존 세션 저장
-    startNewChat: (state) => {
+    startNewChat: (
+      state,
+      action: PayloadAction<{ sessionId?: string; timestamp?: number } | void>
+    ) => {
       // 1. 현재 세션 스냅샷 저장
       if (state.sessions[state.activeSessionId]) {
         state.sessions[state.activeSessionId].messages = state.messages;
         state.sessions[state.activeSessionId].places = state.places;
       }
 
-      // 2. 새 세션 초기화
-      const newSessionId = `session-${Date.now()}`;
+      // 2. 새 세션 초기화 (payload 파라미터 우선 적용)
+      const now = action?.payload?.timestamp || Date.now();
+      const newSessionId = action?.payload?.sessionId || `session-${now}`;
       const newMessages: ChatMessage[] = [
         {
-          id: `init-${Date.now()}`,
+          id: `init-${now}`,
           text: `**${state.selectedDistrict}** 새로운 대화를 시작합니다. 🤖\n\n무엇을 찾아드릴까요? 추천 질문을 누르시거나 찾으시는 장소나 분야를 입력해 주세요.`,
           sender: "ai",
-          timestamp: Date.now(),
           district: state.selectedDistrict,
         },
       ];
@@ -207,8 +208,8 @@ export const chatSlice = createSlice({
         district: state.selectedDistrict,
         messages: newMessages,
         places: [],
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
+        createdAt: now,
+        updatedAt: now,
       };
 
       state.sessions[newSessionId] = newSession;

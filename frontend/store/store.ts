@@ -1,14 +1,18 @@
-//스토어 생성해서 앱전체 에 상태 공급
-
+// Redux Store per-request factory for Next.js App Router (SSR safe)
 import { configureStore } from "@reduxjs/toolkit";
-import chatReducer from './chatSlice';
+import chatReducer from "./chatSlice";
 
-export const store = configureStore({
-    reducer:{
-        chat: chatReducer,
+export const makeStore = () => {
+  return configureStore({
+    reducer: {
+      chat: chatReducer,
     },
-});
+  });
+};
 
-// TypeScript에서 사용할 RootState 및 AppDispatch 타입 정의
-export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
+export type AppStore = ReturnType<typeof makeStore>;
+export type RootState = ReturnType<AppStore["getState"]>;
+export type AppDispatch = AppStore["dispatch"];
+
+// Fallback singleton for non-component utilities if needed
+export const store = makeStore();

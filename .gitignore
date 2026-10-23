@@ -34,8 +34,11 @@ ENV/
 
 # IDE & OS
 .idea/
+backend_/.idea/
 .vscode/
 *.swp
 *.swo
+*.key
 .DS_Store
 Thumbs.db
+

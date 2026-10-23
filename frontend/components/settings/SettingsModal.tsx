@@ -114,7 +114,10 @@ export const SettingsModal: React.FC = () => {
       setFeedbackMessage({ type: "info", text: "설정을 저장하고 유효성을 검증하는 중..." });
       const res = await fetch(`${apiUrl}/api/settings/credentials`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "X-Requested-With": "XMLHttpRequest",
+        },
         body: JSON.stringify({
           provider,
           key: keyVal,
@@ -122,7 +125,10 @@ export const SettingsModal: React.FC = () => {
         }),
       });
 
-      if (!res.ok) throw new Error("저장 실패");
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.detail || "저장 실패");
+      }
       const data = await res.json();
       dispatch(setSettingsStatus(data.updated_status));
 
@@ -141,8 +147,8 @@ export const SettingsModal: React.FC = () => {
           text: `${provider === "groq" ? "Groq AI" : provider === "kakao_rest" ? "카카오 REST" : "카카오 지도"} 설정이 성공적으로 저장 및 검증되었습니다!`,
         });
       }
-    } catch (err) {
-      setFeedbackMessage({ type: "error", text: "서버 저장 중 오류가 발생했습니다." });
+    } catch (err: any) {
+      setFeedbackMessage({ type: "error", text: err.message || "서버 저장 중 오류가 발생했습니다." });
     }
   };
 
@@ -158,7 +164,10 @@ export const SettingsModal: React.FC = () => {
 
       const res = await fetch(`${apiUrl}/api/settings/test-connection`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "X-Requested-With": "XMLHttpRequest",
+        },
         body: JSON.stringify({
           provider,
           key: testKey || undefined,
@@ -175,7 +184,7 @@ export const SettingsModal: React.FC = () => {
       } else {
         setFeedbackMessage({
           type: "error",
-          text: `[연결 실패] ${data.message}`,
+          text: `[연결 실패] ${data.message || data.detail || "연결 불가"}`,
         });
       }
       fetchStatus();
@@ -194,6 +203,9 @@ export const SettingsModal: React.FC = () => {
     try {
       const res = await fetch(`${apiUrl}/api/settings/credentials/${provider}`, {
         method: "DELETE",
+        headers: {
+          "X-Requested-With": "XMLHttpRequest",
+        },
       });
       if (res.ok) {
         const data = await res.json();

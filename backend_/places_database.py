@@ -562,10 +562,15 @@ def search_verified_places(
 ) -> List[Dict[str, Any]]:
     """
     지정된 구(District)와 검색어, 카테고리를 기준으로 실존 장소를 조회합니다.
-    [중요 수정 - Bug 1-2 해결]:
+    [중요 수정 - Bug 1-2 & Phase 4 해결]:
     - 질문에서 추출된 카테고리와 일치하지 않는 무관한 기본 목록 자동 반환을 전면 차단합니다.
-    - 예: "노원구 카페 추천" 시 카페가 아닌 생선구이, 갈비탕, 학원은 절대 반환되지 않습니다.
+    - 신규 개업/새로 생긴 매장 질문 시 검증되지 않은 매장을 신규 업체인 것처럼 허위 추천하지 않습니다.
     """
+    # 신규 개업/새로 생긴 매장 조건 검증 방어 (신규 개업 미검증 장소의 허위 추천 차단)
+    new_opening_keywords = ["새로 생긴", "신규 개업", "신규 오픈", "최근 오픈", "신상"]
+    if any(k in query for k in new_opening_keywords):
+        return []
+
     matched = [p for p in VERIFIED_PLACES if p["district"] == district]
 
     # 카테고리 결정: 명시적 매개변수 우선, 없으면 사용자 질의 의도 분석
