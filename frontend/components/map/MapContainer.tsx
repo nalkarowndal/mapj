@@ -44,7 +44,7 @@ export const MapContainer: React.FC = () => {
       </div>
 
       {/* Map View Area */}
-      <div className="flex-1 relative overflow-hidden">
+      <div className="flex-1 relative overflow-hidden min-h-0">
         <KakaoMapView onOpenDetail={(p) => setDetailPlace(p)} />
       </div>
 

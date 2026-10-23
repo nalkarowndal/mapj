@@ -230,6 +230,17 @@ async def test_connection(req: TestConnectionRequest, request: Request):
         return await settings_mgr.test_groq_connection(key_to_test=req.key, model=req.model)
     elif req.provider == "kakao_rest":
         return await settings_mgr.test_kakao_rest_connection(key_to_test=req.key)
+    elif req.provider == "kakao_js":
+        key = (req.key or settings_mgr.get_kakao_js_key()).strip()
+        if not key:
+            return {"success": False, "status": "unconfigured", "message": "카카오 지도 JavaScript 키가 입력되지 않았습니다."}
+        if len(key) < 16 or " " in key:
+            return {"success": False, "status": "invalid_format", "message": "올바른 카카오 JavaScript 키 형식이 아닙니다."}
+        return {
+            "success": True,
+            "status": "format_valid",
+            "message": "카카오 JavaScript 키 형식이 유효합니다. 브라우저 SDK 연결 테스트를 통해 도메인 등록 상태를 확인하세요."
+        }
     else:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

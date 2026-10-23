@@ -27,6 +27,8 @@ interface ChatState {
   activeSessionId: string;
   sessions: Record<string, FullSession>;
   settingsStatus: SettingsStatusResponse | null;
+  settingsTab: "groq" | "kakao_rest" | "kakao_js" | "system";
+  mapReloadTrigger: number;
   requestNonce: number; // 요청 정합성 관리용 일련번호 (지역 변경/세션 전환 시 증가)
 }
 
@@ -65,6 +67,8 @@ const initialState: ChatState = {
   isSidebarOpen: true,
   isMobileDrawerOpen: false,
   isSettingsOpen: false,
+  settingsTab: "groq",
+  mapReloadTrigger: 0,
   activeSessionId: initialSessionId,
   sessions: {
     [initialSessionId]: initialSession,
@@ -175,6 +179,22 @@ export const chatSlice = createSlice({
     // 설정 모달 열림 상태 관리
     setSettingsOpen: (state, action: PayloadAction<boolean>) => {
       state.isSettingsOpen = action.payload;
+    },
+    setSettingsTab: (
+      state,
+      action: PayloadAction<"groq" | "kakao_rest" | "kakao_js" | "system">
+    ) => {
+      state.settingsTab = action.payload;
+    },
+    openSettingsWithTab: (
+      state,
+      action: PayloadAction<"groq" | "kakao_rest" | "kakao_js" | "system">
+    ) => {
+      state.settingsTab = action.payload;
+      state.isSettingsOpen = true;
+    },
+    triggerMapReload: (state) => {
+      state.mapReloadTrigger += 1;
     },
     setSettingsStatus: (state, action: PayloadAction<SettingsStatusResponse | null>) => {
       state.settingsStatus = action.payload;
@@ -321,6 +341,9 @@ export const {
   setSidebarOpen,
   setMobileDrawerOpen,
   setSettingsOpen,
+  setSettingsTab,
+  openSettingsWithTab,
+  triggerMapReload,
   setSettingsStatus,
   startNewChat,
   switchSession,
