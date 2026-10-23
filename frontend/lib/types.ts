@@ -14,7 +14,9 @@ export interface PlaceInfo {
   is_registered: boolean;
   description: string;
   tags?: string[];
-  source?: string;
+  data_source?: string;
+  verification_status?: "reference" | "live_verified";
+  verified_at?: string;
   kakao_url?: string;
 }
 
@@ -27,6 +29,17 @@ export interface ChatMessage {
   places?: PlaceInfo[];
   district?: string;
   status?: "pending" | "success" | "error";
+  canRetry?: boolean;
+}
+
+export interface FullSession {
+  id: string;
+  title: string;
+  district: DistrictName;
+  messages: ChatMessage[];
+  places: PlaceInfo[];
+  createdAt: number;
+  updatedAt: number;
 }
 
 export interface ChatRequestPayload {
@@ -55,3 +68,53 @@ export interface DistrictMeta {
 export type CategoryFilter = "전체" | "맛집" | "카페" | "학원" | "문화시설";
 
 export type MobileTab = "chat" | "places" | "map";
+
+export type ApiProvider = "groq" | "kakao_rest" | "kakao_js";
+
+export type ApiConnectionStatus =
+  | "unconfigured"
+  | "configured_untested"
+  | "connected"
+  | "invalid_key"
+  | "forbidden"
+  | "rate_limited"
+  | "error"
+  | "timeout";
+
+export interface GroqModelOption {
+  id: string;
+  name: string;
+  description: string;
+  is_default: boolean;
+}
+
+export interface SettingsStatusResponse {
+  groq: {
+    is_configured: boolean;
+    masked_key: string;
+    model: string;
+    status: ApiConnectionStatus;
+    status_message: string;
+    last_validated?: number;
+    supported_models: GroqModelOption[];
+  };
+  kakao_rest: {
+    is_configured: boolean;
+    masked_key: string;
+    status: ApiConnectionStatus;
+    status_message: string;
+    last_validated?: number;
+  };
+  kakao_js: {
+    is_configured: boolean;
+    masked_key: string;
+    status: string;
+    status_message: string;
+    domain_guide: {
+      registered_domains: string[];
+      developers_url: string;
+    };
+  };
+  operational_mode: "live_api" | "local_verified";
+  server_time: number;
+}

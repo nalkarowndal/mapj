@@ -63,7 +63,15 @@ export const PlaceDetailModal: React.FC<PlaceDetailModalProps> = ({
             </>
           )}
           <span>•</span>
-          <span className="text-slate-500">출처: {place.source || "검증된 지역 데이터베이스"}</span>
+          <span className="text-slate-400">
+            출처: {place.data_source || (place as any).source || "로컬 참고 데이터 (데모)"}
+          </span>
+          {place.verified_at && (
+            <>
+              <span>•</span>
+              <span className="text-slate-500">기준일: {place.verified_at}</span>
+            </>
+          )}
         </div>
 
         {/* Address & Contact Details */}

@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "@/store/store";
-import { setShowMap } from "@/store/chatSlice";
+import { closeMap } from "@/store/chatSlice";
 import { KakaoMapView } from "./KakaoMapView";
 import { PlaceDetailModal } from "../places/PlaceDetailModal";
 import { PlaceInfo } from "@/lib/types";
@@ -22,17 +22,18 @@ export const MapContainer: React.FC = () => {
             <FaMap />
           </div>
           <div>
-            <h3 className="font-bold text-xs text-white">
+            <h3 className="font-bold text-xs sm:text-sm text-white">
               {selectedDistrict} 위치 지도
             </h3>
-            <span className="text-[10px] text-slate-400">
+            <span className="text-[11px] text-slate-400">
               실시간 장소 마커 및 길찾기
             </span>
           </div>
         </div>
 
+        {/* [Bug 1-10 해결]: 닫기 시 모바일 화면 탭까지 안전하게 복귀 */}
         <button
-          onClick={() => dispatch(setShowMap(false))}
+          onClick={() => dispatch(closeMap())}
           title="지도 패널 닫기"
           aria-label="지도 패널 닫기"
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#1E293B] hover:bg-red-500/20 hover:text-red-300 text-slate-300 text-xs font-semibold border border-white/10 transition cursor-pointer"

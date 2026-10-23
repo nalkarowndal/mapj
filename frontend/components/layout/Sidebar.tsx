@@ -5,9 +5,12 @@ import { RootState, AppDispatch } from "@/store/store";
 import {
   setSelectedDistrict,
   startNewChat,
+  switchSession,
+  deleteSession,
   toggleSidebar,
+  setSettingsOpen,
 } from "@/store/chatSlice";
-import { DISTRICT_LIST, DISTRICT_DETAILS } from "@/lib/districtData";
+import { DISTRICT_LIST } from "@/lib/districtData";
 import { DistrictName } from "@/lib/types";
 import { Button } from "../ui/Button";
 import {
@@ -18,20 +21,24 @@ import {
   FaChevronLeft,
   FaChevronRight,
   FaCompass,
+  FaCog,
+  FaTrashAlt,
 } from "react-icons/fa";
 
 export const Sidebar: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { isSidebarOpen, selectedDistrict, recentConversations, activeSessionId } =
+  const { isSidebarOpen, selectedDistrict, activeSessionId, sessions } =
     useSelector((state: RootState) => state.chat);
+
+  const sessionList = Object.values(sessions).sort((a, b) => b.updatedAt - a.updatedAt);
 
   if (!isSidebarOpen) {
     return (
       <aside
         aria-label="축소된 사이드바"
-        className="hidden md:flex flex-col items-center py-5 w-16 bg-[#131B2E]/90 border-r border-white/10 shrink-0 justify-between select-none"
+        className="hidden md:flex flex-col items-center py-4 w-16 bg-[#131B2E]/90 border-r border-white/10 shrink-0 justify-between select-none"
       >
-        <div className="flex flex-col items-center gap-5">
+        <div className="flex flex-col items-center gap-4">
           <button
             onClick={() => dispatch(toggleSidebar())}
             title="사이드바 펼치기"
@@ -49,14 +56,25 @@ export const Sidebar: React.FC = () => {
             <FaPlus size={14} />
           </button>
         </div>
-        <button
-          onClick={() => dispatch(toggleSidebar())}
-          title="사이드바 펼치기"
-          aria-label="사이드바 펼치기"
-          className="p-2.5 text-slate-400 hover:text-white rounded-xl hover:bg-white/10 transition cursor-pointer"
-        >
-          <FaChevronRight size={14} />
-        </button>
+
+        <div className="flex flex-col items-center gap-3">
+          <button
+            onClick={() => dispatch(setSettingsOpen(true))}
+            title="설정"
+            aria-label="설정"
+            className="p-2.5 text-slate-400 hover:text-[#FDE047] rounded-xl hover:bg-white/10 transition cursor-pointer"
+          >
+            <FaCog size={15} />
+          </button>
+          <button
+            onClick={() => dispatch(toggleSidebar())}
+            title="사이드바 펼치기"
+            aria-label="사이드바 펼치기"
+            className="p-2 text-slate-400 hover:text-white rounded-xl hover:bg-white/10 transition cursor-pointer"
+          >
+            <FaChevronRight size={14} />
+          </button>
+        </div>
       </aside>
     );
   }
@@ -68,7 +86,7 @@ export const Sidebar: React.FC = () => {
     >
       {/* 1. Header: Logo & Collapse Button */}
       <div className="p-4 flex items-center justify-between border-b border-white/10">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
           <div className="w-10 h-10 rounded-2xl bg-[#1E293B] border border-white/10 flex items-center justify-center text-[#FDE047] shadow-inner text-lg">
             <FaRobot />
           </div>
@@ -109,7 +127,7 @@ export const Sidebar: React.FC = () => {
             <FaCompass size={11} className="text-blue-400" />
             탐색 자치구
           </span>
-          <span className="text-[10px] text-[#FDE047] bg-[#FDE047]/10 px-2 py-0.5 rounded-lg border border-[#FDE047]/20 font-semibold">
+          <span className="text-[11px] text-[#FDE047] bg-[#FDE047]/10 px-2 py-0.5 rounded-lg border border-[#FDE047]/20 font-semibold">
             {selectedDistrict} 선택됨
           </span>
         </div>
@@ -137,57 +155,62 @@ export const Sidebar: React.FC = () => {
         </div>
       </div>
 
-      {/* 4. Recent Conversations History */}
+      {/* 4. Recent Conversations History with Switch & Delete */}
       <div className="flex-1 flex flex-col min-h-0 px-4 py-3 overflow-hidden border-t border-white/5">
         <span className="text-xs font-bold text-slate-400 flex items-center gap-1.5 mb-2.5">
           <FaComments size={11} className="text-slate-400" />
-          최근 대화 기록
+          최근 대화 기록 ({sessionList.length})
         </span>
-        <div className="flex-1 overflow-y-auto space-y-1.5 pr-1">
-          {recentConversations.length > 0 ? (
-            recentConversations.map((session) => {
-              const isActive = session.id === activeSessionId;
-              return (
-                <div
-                  key={session.id}
-                  className={`p-2.5 rounded-xl text-xs transition cursor-pointer border flex flex-col gap-0.5 ${
-                    isActive
-                      ? "bg-[#1E293B] text-white border-blue-500/30"
-                      : "bg-transparent text-slate-400 border-transparent hover:bg-white/5 hover:text-slate-200"
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="font-semibold truncate max-w-[170px] text-slate-200">
-                      {session.title}
-                    </span>
-                    <span className="text-[10px] text-slate-500 shrink-0">
-                      {session.district}
-                    </span>
+        <div className="flex-1 overflow-y-auto space-y-1.5 pr-1 scrollbar-thin">
+          {sessionList.map((session) => {
+            const isActive = session.id === activeSessionId;
+            return (
+              <div
+                key={session.id}
+                onClick={() => dispatch(switchSession(session.id))}
+                className={`p-2.5 rounded-xl text-xs transition cursor-pointer border flex items-center justify-between group ${
+                  isActive
+                    ? "bg-[#1E293B] text-white border-blue-500/40 shadow-sm"
+                    : "bg-transparent text-slate-400 border-transparent hover:bg-white/5 hover:text-slate-200"
+                }`}
+              >
+                <div className="min-w-0 pr-2">
+                  <div className="font-semibold truncate text-slate-200 text-xs">
+                    {session.title}
                   </div>
-                  <span className="text-[10px] text-slate-500">
-                    {new Date(session.timestamp).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </span>
+                  <div className="text-[10px] text-slate-500">
+                    {session.district} · {session.messages?.length || 0}개 대화
+                  </div>
                 </div>
-              );
-            })
-          ) : (
-            <div className="py-6 text-center text-xs text-slate-500">
-              대화 기록이 없습니다.
-            </div>
-          )}
+
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    dispatch(deleteSession(session.id));
+                  }}
+                  title="대화 삭제"
+                  aria-label="대화 삭제"
+                  className="p-1.5 text-slate-500 hover:text-red-400 rounded-lg hover:bg-red-500/10 transition cursor-pointer opacity-0 group-hover:opacity-100 shrink-0"
+                >
+                  <FaTrashAlt size={10} />
+                </button>
+              </div>
+            );
+          })}
         </div>
       </div>
 
-      {/* 5. Footer Info */}
-      <div className="p-3 border-t border-white/10 bg-[#0F172A]/80 text-[11px] text-slate-400 flex items-center justify-between">
-        <span className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-          로컬 어시스턴트 v2.0
-        </span>
-        <span className="text-[10px] text-slate-500">FastAPI & Groq</span>
+      {/* 5. Footer: Settings Button */}
+      <div className="p-3 border-t border-white/10 bg-[#0F172A]/80 flex items-center justify-between">
+        <button
+          onClick={() => dispatch(setSettingsOpen(true))}
+          className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs text-slate-300 hover:text-[#FDE047] hover:bg-white/5 transition cursor-pointer font-semibold border border-transparent hover:border-white/10"
+        >
+          <FaCog size={13} className="text-[#FDE047]" />
+          <span>API 및 시스템 설정</span>
+        </button>
+
+        <span className="text-[10px] text-slate-500 font-mono">v2.1</span>
       </div>
     </aside>
   );

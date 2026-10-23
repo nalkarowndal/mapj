@@ -1,5 +1,35 @@
 # 변경 이력서 (CHANGELOG)
 
+## [2.1.0] - 2026-10-23
+
+### 1. 12대 핵심 기능·보안·UI 오류 전수 수정
+- **Groq API 연결 상태 검증 분리**: 클라이언트 인스턴스 생성과 실제 API 인증 분리. `test_groq_connection()` 엔드포인트를 통해 401(인증 실패), 429(할당량 초과), 타임아웃을 명확히 구분.
+- **장소 추천 Fallthrough 제거**: "노원구 카페" 검색 시 무관한 생선구이, 갈비집, 학원 등이 반환되던 fallthrough 로직 제거. 카테고리 추출 정규화 엔진(`_extract_intent_category`) 및 스코어 필터링 도입.
+- **장소 출처 및 검증 상태 분리**: 로컬 정적 데이터에 무조건적인 '검증 완료' 라벨을 부착하지 않고 `로컬 참고 데이터 (데모)` 및 `최근 확인: 2026-10-23` 일자로 투명하게 분리.
+- **지역 변경 시 상태 정합성 보장**: 자치구 변경 시 이전 장소 목록(`places = []`) 및 마커 즉시 초기화, `requestNonce` 증가로 비동기 결과 혼입 방지.
+- **비동기 요청 경쟁 상태(Race Condition) 방어**: `AbortController` 및 요청 고유 Nonce 도입으로 이전 요청 즉시 취소 및 덮어쓰기 방지. 네트워크 에러 시 `onRetry` 재시도 버튼 제공.
+- **가짜 로딩 타이머 제거**: 실제 네트워크 요청과 무관한 `setTimeout` 3단계 체인을 전면 제거하고 실제 백엔드 라이프사이클에 맞춤.
+- **Kakao Maps SDK 오류 처리 및 중복 초기화 방지**: 싱글톤 Promise 기반 로더 구축, 도메인 불일치 에러 시 인터랙티브 폴백 시각화 및 도메인 등록 가이드 배너 표시.
+- **Kakao InfoWindow XSS 취약점 차단**: raw HTML 템플릿 리터럴 주입 대신 `document.createElement` + `textContent` DOM API 강제 적용, 외부 URL 프로토콜 및 도메인 검증.
+- **모바일 헤더 햄버거 메뉴 동작 복원**: `MobileDrawer.tsx` 신규 개발. 모바일 뷰포트에서 메뉴 클릭 시 새 대화, 5개 자치구 선택, 최근 대화 세션 복원, API 설정 드로어 노출.
+- **모바일 지도 닫기 시 화면 전환 버그 수정**: `closeMap` 리듀서 도입으로 지도 닫기 시 모바일 탭이 안전하게 `'chat'`으로 전환.
+- **최근 대화 완전 세션 복원**: `FullSession` 인터페이스 및 `sessions: Record<string, FullSession>` 구조 도입. 대화 전환 시 과거 질의 및 추천 장소 100% 원상 복원.
+- **모달 포커스 트랩 및 접근성(a11y) 고도화**: `Modal.tsx`에 Tab/Shift+Tab 포커스 트랩, 초기 포커스, 닫기 후 트리거 요소 복원, ESC 리스너 적용.
+
+### 2. 런타임 API 설정 시스템 신규 구축
+- **4개 탭 전용 설정 모달 (`SettingsModal.tsx`)**: Groq AI 설정, 카카오 로컬 REST 설정, 카카오 지도 SDK 설정, 시스템 진단 및 상태 현황판 구축.
+- **서버 측 보안 저장소 (`backend_/settings_manager.py`)**: `backend_/data/settings.json`에 안전 저장, `.gitignore`로 형상관리 격리, 마스킹 알고리즘(`gsk_••••••••qX91`) 적용.
+- **비밀키 브라우저 노출 완전 차단**: 전체 비밀키를 반환하는 GET API 차단, 브라우저 지도 렌더링에 필요한 공개용 JavaScript 키만 `GET /api/settings/public-map-config`로 분리 제공.
+- **무중단 런타임 갱신**: 서버 재시작 없이 설정 저장 즉시 신규 API 클라이언트로 동적 갱신.
+- **설정 백엔드 REST API 5종 구축**: `GET /api/settings/status`, `POST /api/settings/credentials`, `DELETE /api/settings/credentials/{provider}`, `POST /api/settings/test-connection`, `GET /api/settings/public-map-config`.
+
+### 3. UI/UX 및 가독성 고도화
+- **타이포그래피 스케일 상향**: 10~11px 극소 텍스트를 최소 12~14px로 개선하여 고해상도 가독성 대폭 향상.
+- **접근성 및 키보드 인터랙션**: 장소 카드에 `tabIndex={0}` 및 `Enter/Space` 키보드 인터랙션 지원.
+- **모바일 반응형 드로어 및 닫기 UX**: 320px ~ 390px 뷰포트에서 헤더 요소 겹침 방지 및 부드러운 드로어 애니메이션 제공.
+
+---
+
 ## [2.0.0] - 2026-10-23
 
 ### 1. 보안 및 아키텍처 기반 강화

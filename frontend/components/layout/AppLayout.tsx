@@ -2,13 +2,14 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "@/store/store";
-import { setShowMap } from "@/store/chatSlice";
 import { Sidebar } from "./Sidebar";
 import { Header } from "./Header";
 import { MobileNav } from "./MobileNav";
+import { MobileDrawer } from "./MobileDrawer";
 import { ChatPanel } from "../chat/ChatPanel";
 import { PlacesPanel } from "../places/PlacesPanel";
 import { MapContainer } from "../map/MapContainer";
+import { SettingsModal } from "../settings/SettingsModal";
 import { FaListUl, FaMap } from "react-icons/fa";
 
 export const AppLayout: React.FC = () => {
@@ -72,7 +73,7 @@ export const AppLayout: React.FC = () => {
                   </button>
                 </div>
 
-                <span className="text-[11px] text-slate-400">
+                <span className="text-xs text-slate-400">
                   {rightPanelTab === "places" ? "카드 선택 시 지도 연동" : "마커 클릭 시 카드 동기화"}
                 </span>
               </div>
@@ -106,6 +107,10 @@ export const AppLayout: React.FC = () => {
         {/* 3. Mobile Bottom Navigation */}
         <MobileNav />
       </div>
+
+      {/* 4. Global Modals and Drawers */}
+      <MobileDrawer />
+      <SettingsModal />
     </div>
   );
 };

@@ -26,13 +26,15 @@ export const ChatPanel: React.FC = () => {
     loadingStep,
     selectedDistrict,
     activeCategory,
-    places,
+    requestNonce,
   } = useSelector((state: RootState) => state.chat);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showScrollBottomBtn, setShowScrollBottomBtn] = useState(false);
 
-  // Check scroll position to decide whether to show "Scroll to bottom" button
+  // [Bug 1-5 해결]: 요청 취소 및 비동기 경쟁 상태 방지용 AbortController
+  const abortControllerRef = useRef<AbortController | null>(null);
+
   const handleScroll = useCallback(() => {
     if (!scrollContainerRef.current) return;
     const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
@@ -50,17 +52,31 @@ export const ChatPanel: React.FC = () => {
   };
 
   useEffect(() => {
-    // If near bottom, auto scroll on new message or status change
     if (!showScrollBottomBtn) {
       scrollToBottom("smooth");
     }
   }, [messages, isLoading, showScrollBottomBtn]);
 
+  // 언마운트 시 진행 중인 요청 취소
+  useEffect(() => {
+    return () => {
+      abortControllerRef.current?.abort();
+    };
+  }, []);
+
+  // [Bug 1-5 & 1-6 해결]: 실시간 네트워크 상태 연결 및 이전 요청 안전 취소
   const handleSendQuery = async (queryText?: string) => {
     const textToSend = (queryText || inputText).trim();
     if (!textToSend || isLoading) return;
 
+    // 이전 비동기 요청 취소
+    abortControllerRef.current?.abort();
+    const abortController = new AbortController();
+    abortControllerRef.current = abortController;
+
+    const capturedNonce = requestNonce;
     const userMessageId = `user-${Date.now()}`;
+
     dispatch(
       addMessage({
         id: userMessageId,
@@ -72,9 +88,8 @@ export const ChatPanel: React.FC = () => {
     );
     dispatch(setInputText(""));
     dispatch(setIsLoading(true));
-    dispatch(setLoadingStep("질문 의도 및 자치구 분석 중..."));
+    dispatch(setLoadingStep("질문 전송 및 지역 탐색 분석 중..."));
 
-    // Prepare multi-turn history
     const history = messages.slice(-6).map((m) => ({
       role: (m.sender === "user" ? "user" : "assistant") as "user" | "assistant",
       content: m.text,
@@ -83,17 +98,10 @@ export const ChatPanel: React.FC = () => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
     try {
-      setTimeout(() => {
-        dispatch(setLoadingStep("실존 검증 장소 및 카카오 로컬 검색 중..."));
-      }, 300);
-
-      setTimeout(() => {
-        dispatch(setLoadingStep("AI 지역 맞춤 추천 답변 정리 중..."));
-      }, 600);
-
       const response = await fetch(`${apiUrl}/api/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        signal: abortController.signal,
         body: JSON.stringify({
           message: textToSend,
           district: selectedDistrict,
@@ -102,13 +110,22 @@ export const ChatPanel: React.FC = () => {
         }),
       });
 
+      // 요청 도중 지역이 바뀌었거나 세션이 전환된 경우 응답 폐기
+      if (capturedNonce !== requestNonce) {
+        console.warn("지역/세션 변경으로 인해 이전 요청 결과를 안전하게 폐기합니다.");
+        return;
+      }
+
       if (!response.ok) {
         throw new Error(`서버 응답 오류 (상태코드: ${response.status})`);
       }
 
+      dispatch(setLoadingStep("추천 정보 정리 및 답변 렌더링 중..."));
       const data = await response.json();
-      const aiMessageId = `ai-${Date.now()}`;
 
+      if (capturedNonce !== requestNonce) return;
+
+      const aiMessageId = `ai-${Date.now()}`;
       dispatch(
         addMessage({
           id: aiMessageId,
@@ -127,21 +144,30 @@ export const ChatPanel: React.FC = () => {
       if (Array.isArray(data.places) && data.places.length > 0) {
         dispatch(setPlaces(data.places));
       }
-    } catch (error) {
+    } catch (error: any) {
+      if (error.name === "AbortError") {
+        console.log("사용자 요청에 의해 이전 비동기 작업이 취소되었습니다.");
+        return;
+      }
+
+      if (capturedNonce !== requestNonce) return;
+
       console.error("통신 에러:", error);
       const errorMessageId = `err-${Date.now()}`;
       dispatch(
         addMessage({
           id: errorMessageId,
-          text: `⚠️ **서버 통신 실패**: 백엔드 서버(포트 8000)와의 연결을 확인해 주세요.\n\n*잠시 후 다시 시도해 주시기 바랍니다.*`,
+          text: `⚠️ **서버 연결 실패**: 백엔드 서버와의 통신에 실패했습니다.\n\n다시 시도하시거나 상단 **설정** 메뉴에서 API 연결 상태를 점검해 주세요.`,
           sender: "ai",
           timestamp: Date.now(),
           status: "error",
+          canRetry: true,
         })
       );
     } finally {
-      dispatch(setIsLoading(false));
-      setTimeout(() => scrollToBottom("smooth"), 100);
+      if (capturedNonce === requestNonce) {
+        dispatch(setIsLoading(false));
+      }
     }
   };
 
@@ -156,7 +182,7 @@ export const ChatPanel: React.FC = () => {
       <div
         ref={scrollContainerRef}
         onScroll={handleScroll}
-        className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5"
+        className="flex-1 overflow-y-auto p-3 sm:p-6 space-y-4 sm:space-y-5"
       >
         {/* Quick Prompts on initial conversation */}
         {messages.length <= 1 && (
@@ -169,10 +195,22 @@ export const ChatPanel: React.FC = () => {
             key={msg.id}
             message={msg}
             onSelectPlace={handleSelectPlace}
+            onRetry={
+              msg.canRetry && messages[messages.length - 1]?.id === msg.id
+                ? () => {
+                    const lastUserMsg = [...messages]
+                      .reverse()
+                      .find((m) => m.sender === "user");
+                    if (lastUserMsg) {
+                      handleSendQuery(lastUserMsg.text);
+                    }
+                  }
+                : undefined
+            }
           />
         ))}
 
-        {/* Loading Indicator */}
+        {/* Loading Indicator with Real Steps */}
         {isLoading && <ChatStatusIndicator step={loadingStep} />}
       </div>
 
@@ -181,7 +219,7 @@ export const ChatPanel: React.FC = () => {
         <button
           onClick={() => scrollToBottom("smooth")}
           aria-label="최신 메시지로 스크롤"
-          className="absolute bottom-24 right-6 z-20 w-9 h-9 rounded-full bg-[#1E293B] hover:bg-slate-700 text-[#FDE047] border border-white/15 shadow-xl flex items-center justify-center transition-all cursor-pointer animate-bounce"
+          className="absolute bottom-24 right-5 sm:right-6 z-20 w-9 h-9 rounded-full bg-[#1E293B] hover:bg-slate-700 text-[#FDE047] border border-white/15 shadow-xl flex items-center justify-center transition-all cursor-pointer animate-bounce"
         >
           <FaArrowDown size={13} />
         </button>
