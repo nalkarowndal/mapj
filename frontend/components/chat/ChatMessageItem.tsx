@@ -133,7 +133,10 @@ export const ChatMessageItem: React.FC<ChatMessageItemProps> = ({
 
         {/* Timestamp */}
         {message.timestamp && (
-          <span className="text-[11px] text-slate-500 mt-1 px-1">
+          <span
+            className="text-[11px] text-slate-500 mt-1 px-1"
+            suppressHydrationWarning
+          >
             {new Date(message.timestamp).toLocaleTimeString([], {
               hour: "2-digit",
               minute: "2-digit",

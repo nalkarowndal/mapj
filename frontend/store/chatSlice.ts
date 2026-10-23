@@ -30,13 +30,14 @@ interface ChatState {
   requestNonce: number; // 요청 정합성 관리용 일련번호 (지역 변경/세션 전환 시 증가)
 }
 
-const initialSessionId = `session-${Date.now()}`;
+const initialSessionId = "session-initial";
+const initialTimestamp = 1729648800000;
 const initialMessages: ChatMessage[] = [
   {
     id: "init-1",
     text: "안녕하세요! 서울 동북권 맞춤형 **AI 로컬 어시스턴트**입니다. 🤖\n\n선택하신 자치구의 **맛집, 카페, 학원가, 문화 명소**를 AI와 실시간 인터랙티브 지도로 탐색해 보세요. 아래 추천 질문을 누르시거나 직접 물어보세요!",
     sender: "ai",
-    timestamp: Date.now(),
+    timestamp: initialTimestamp,
     district: "노원구",
   },
 ];
@@ -47,8 +48,8 @@ const initialSession: FullSession = {
   district: "노원구",
   messages: initialMessages,
   places: [],
-  createdAt: Date.now(),
-  updatedAt: Date.now(),
+  createdAt: initialTimestamp,
+  updatedAt: initialTimestamp,
 };
 
 const initialState: ChatState = {
