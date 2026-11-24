@@ -7,6 +7,13 @@ httpx>=0.27.0
 cryptography>=42.0.0
 python-dotenv>=1.0.0
 requests>=2.31.0
+python-multipart>=0.0.20
+pillow>=10.0.0
 
-# Streamlit 프로토타입/대시보드 의존성
+# 데이터베이스 & 마이그레이션 (PostgreSQL 1순위 / SQLite 로컬 개발 호환)
+sqlalchemy>=2.0.30
+alembic>=1.14.0
+psycopg[binary]>=3.2.0
+
+# Streamlit 프로토타입/대시보드 의존성 (레거시 참조용)
 streamlit>=1.35.0

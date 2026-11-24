@@ -8,6 +8,7 @@
 *.env.production.local
 !*.env.example
 backend_/data/
+backend_/uploads/
 settings.json
 *.secret
 

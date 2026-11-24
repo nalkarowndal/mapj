@@ -7,16 +7,20 @@
 - GET /api/categories
 - GET /api/collections
 - GET /api/collections/{slug}
+- POST /api/feedback (SQLAlchemy DB feedback_reports 테이블 영구 저장)
 """
 
-import json
-import time
-import uuid
-from pathlib import Path
-from typing import Optional
-from fastapi import APIRouter, HTTPException, Query, status
-from pydantic import BaseModel, Field
+from __future__ import annotations
 
+import uuid
+from typing import Optional
+
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from pydantic import BaseModel, Field
+from sqlalchemy.orm import Session
+
+from db.database import get_db
+from db.models import FeedbackReport, Restaurant
 from gourmet_catalog import (
     get_all_categories,
     get_all_collections,
@@ -28,8 +32,6 @@ from gourmet_catalog import (
 )
 
 router = APIRouter(prefix="/api", tags=["Public Gourmet API"])
-
-FEEDBACK_FILE = Path(__file__).resolve().parent.parent / "data" / "feedback_reports.json"
 
 
 class FeedbackCreateRequest(BaseModel):
@@ -121,33 +123,26 @@ def collection_detail(slug: str):
 
 
 @router.post("/feedback", status_code=status.HTTP_201_CREATED)
-def submit_feedback(payload: FeedbackCreateRequest):
-    FEEDBACK_FILE.parent.mkdir(parents=True, exist_ok=True)
-    existing = []
-    if FEEDBACK_FILE.exists():
-        try:
-            existing = json.loads(FEEDBACK_FILE.read_text(encoding="utf-8"))
-        except Exception:
-            existing = []
+def submit_feedback(payload: FeedbackCreateRequest, db: Session = Depends(get_db)):
+    rid = payload.restaurant_id
+    if rid and not db.get(Restaurant, rid):
+        rid = None
 
-    record = {
-        "id": f"fb-{uuid.uuid4().hex[:10]}",
-        "restaurant_id": payload.restaurant_id,
-        "restaurant_name": payload.restaurant_name,
-        "report_type": payload.report_type,
-        "content": payload.content.strip(),
-        "reporter_contact": payload.reporter_contact.strip() if payload.reporter_contact else None,
-        "status": "pending",
-        "created_at": int(time.time() * 1000),
-    }
-    existing.append(record)
-    FEEDBACK_FILE.write_text(
-        json.dumps(existing, ensure_ascii=False, indent=2),
-        encoding="utf-8",
+    fb_id = f"fb-{uuid.uuid4().hex[:10]}"
+    row = FeedbackReport(
+        id=fb_id,
+        restaurant_id=rid,
+        restaurant_name=(payload.restaurant_name or "").strip() or None,
+        report_type=payload.report_type,
+        content=payload.content.strip(),
+        reporter_contact=payload.reporter_contact.strip() if payload.reporter_contact else None,
+        status="pending",
     )
+    db.add(row)
+    db.commit()
+
     return {
         "success": True,
-        "id": record["id"],
+        "id": fb_id,
         "message": "소중한 제보가 접수되었습니다. 검수 후 반영하겠습니다.",
     }
-

@@ -15,8 +15,8 @@
 | **P2** | 홈페이지 및 지역별 페이지 구현 | **PASS** | 2026-11-24 | 백엔드 단일 Public API(28건 100% 카카오 실존 검증), 신규 홈페이지(`/`), `/regions`, 5개 자치구(`/regions/[slug]`) 구현 및 4개 해상도+전 페이지 시각 QA PASS |
 | **P3** | 맛집 탐색 및 상세 페이지 구현 | **PASS** | 2026-11-24 | `/restaurants`(URL searchParams·상세필터·정렬·페이지네이션), `/restaurants/[slug]`(JSON-LD·미니맵·방문정보), `/collections/*`, `/saved`(LocalStorage), `/about`, `/feedback`, `sitemap.xml`, `robots.txt` 및 전체 E2E PASS |
 | **P4** | 지도 및 AI 추천 기능 고도화 | **PASS** | 2026-11-24 | `/map`(Kakao Maps SDK 7단계 라이프사이클·`CustomOverlay`·데스크톱 38:62·모바일 바텀시트·장애 fallback), `/concierge`(DB 선조회·실존 ID 제한 Groq AI·환각 차단·기록 아코디언) 및 지도 회귀+AI 신뢰성 QA PASS |
-| **P5** | 데이터베이스 및 관리자 시스템 | 대기 (사용자 승인 후 착수) | - | 19개 테이블 DB, 데이터 확충/검수, `/admin` + 서버 인증 + API 설정 이전 |
-| **P6** | 자동 QA 및 최종 품질 고도화 | 대기 | - | 9대 해상도 Playwright QA, 보안/SEO/성능 검수, README |
+| **P5** | 데이터베이스 및 관리자 시스템 | **PASS** | 2026-11-24 | SQLAlchemy 2.0 20개 테이블(PostgreSQL DDL·Alembic·백업/복구), 110건 카카오 실존 통합 DB, 서버 인증 `/admin` CRUD·이미지·API 설정 이전 및 보안/QA PASS |
+| **P6** | 자동 QA 및 최종 품질 고도화 | 대기 (사용자 승인 후 착수) | - | 9대 해상도 Playwright QA, 보안/SEO/성능 검수, README |
 
 ---
 
@@ -44,4 +44,19 @@
 - **빌드 및 시각/회귀 QA**:
   - `next build` 16개 라우트 TypeScript/프로덕션 빌드 PASS.
   - Playwright 지도 회귀(실제 타일·지역 전환·미설정 fallback·모바일 바텀시트) + AI 컨시어지 데스크톱/모바일 검수 `failures=0`, 콘솔 오류 `0`건, 스크린샷 6종 육안 확인 PASS (`docs/redesign/screenshots/p4_map_concierge/`).
+
+## P5 완료 기록 (2026-11-24)
+
+- **정규화 데이터베이스 & PostgreSQL 호환 마이그레이션**:
+  - `backend_/db/database.py`, `backend_/db/models.py`, `backend_/db/auth.py`, `backend_/db/seed.py` 구현 (핵심 19개 테이블 + 서버 세션 `admin_sessions` = 총 20개 테이블, `UNIQUE(name, road_address)` 중복 차단 제약).
+  - Alembic 초기 마이그레이션(`backend_/alembic/versions/0001_initial_schema.py`) 적용, `postgresql.dialect()` 기반 `docs/redesign/db/postgresql_schema.sql` 컴파일 생성, `docker-compose.postgres.yml` 및 백업/복구 CLI(`backend_/scripts/db_backup_restore.py`) 구축·실측 검증.
+- **단일 DB 통합 & 카카오 실존 수집/검증 파이프라인**:
+  - `backend_/scripts/collect_and_verify_kakao.py` 실측 실행으로 5개 자치구 각 22건, 총 **110건** 100% 카카오 로컬 실존 검증 매장 확보(타 자치구 14건·중복 6건·도로명 미기재 1건 자동 거부, 가상 매장 0건).
+  - `backend_/gourmet_catalog.py` 및 `POST /api/feedback`을 SQLAlchemy DB 실시간 조회/저장으로 전환.
+- **서버 인증 관리자 API & 독립 `/admin` 콘솔**:
+  - PBKDF2-SHA256(310,000회) 비밀번호 해싱, 로그인 실패 분당 5회 Rate Limiting, 서버 DB 세션(`HttpOnly` 쿠키/Bearer), 로그아웃 즉시 무효화 구현.
+  - 미인증 상태에서 `/api/admin/*` 및 레거시 `/api/settings/*` 변경·상태 조회 7종 모두 `401 Unauthorized` 반환 확인.
+  - 독립 레이아웃 `/admin`, `/admin/login` 구축(대시보드, 맛집 CRUD + `409 Conflict` 중복 차단 + 실시간 카카오 재검증, Pillow 시그니처/5MB 검증 이미지 업로드, 지역/테마, 제보/검증 로그, 외부 API 설정 이전).
+- **문서 산출물 및 QA**:
+  - `DB_ERD.md`, `db/postgresql_schema.sql`, `ADMIN_API_SPEC.md`, `ADMIN_MANUAL.md`, `DATA_COLLECTION_REPORT.md` 작성, `next build`(18개 라우트) 및 보안/CRUD/Playwright `/admin` 시각 QA 스크린샷 4종 육안 확인 PASS.
 
