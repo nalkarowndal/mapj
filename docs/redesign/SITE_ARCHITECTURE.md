@@ -127,3 +127,4 @@ backend_/
 - `frontend/next.config.ts`: `BACKEND_INTERNAL_URL` 환경변수(기본값 `http://127.0.0.1:8000`)를 사용해 `/api/:path*` 프록시.
 - 클라이언트 코드(`fetch`): 상대경로 `/api/...`를 기본 사용하고, Server Component는 `process.env.BACKEND_INTERNAL_URL || "http://127.0.0.1:8000"`을 사용하여 로컬·스테이징·운영 환경 모두 대응.
 - `backend_`: `DATABASE_URL`(기본 SQLite → 운영 PostgreSQL), `ADMIN_JWT_SECRET`, `ADMIN_DEFAULT_USERNAME`, `ADMIN_DEFAULT_PASSWORD_HASH`, `ALLOWED_ORIGINS`를 환경변수로 외부화.
+

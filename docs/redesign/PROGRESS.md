@@ -11,8 +11,8 @@
 | 단계 | 단계명 | 상태 | 완료일 | 주요 산출물 / 비고 |
 |---|---|---|---|---|
 | **P0** | 기존 분석 및 신규 서비스 설계 | **PASS** | 2026-11-24 | 감사·설계 문서 6종, `PROGRESS.md`, Baseline 스크린샷 4종 확보 |
-| **P1** | 브랜드 및 디자인 시스템 구축 | 대기 (사용자 승인 후 착수) | - | `DESIGN_SYSTEM.md`, `VISUAL_DIRECTION.md`, `COMPONENT_GUIDE.md`, `ASSET_MANIFEST.md`, 공통 UI |
-| **P2** | 홈페이지 및 지역별 페이지 구현 | 대기 | - | `/`, `/regions`, `/regions/[slug]` 5개 자치구 |
+| **P1** | 브랜드 및 디자인 시스템 구축 | **PASS** | 2026-11-24 | `DESIGN_SYSTEM.md`, `VISUAL_DIRECTION.md`, `COMPONENT_GUIDE.md`, `ASSET_MANIFEST.md`, 에디토리얼 이미지 10종 + 플레이스홀더 SVG, 공통 UI 12종, 4개 해상도 시각 QA PASS |
+| **P2** | 홈페이지 및 지역별 페이지 구현 | 대기 (사용자 승인 후 착수) | - | `/`, `/regions`, `/regions/[slug]` 5개 자치구 |
 | **P3** | 맛집 탐색 및 상세 페이지 구현 | 대기 | - | `/restaurants`, `/restaurants/[slug]`, `/collections/*`, `/saved`, `/feedback`, `/about` |
 | **P4** | 지도 및 AI 추천 기능 고도화 | 대기 | - | `/map`, `/concierge` |
 | **P5** | 데이터베이스 및 관리자 시스템 | 대기 | - | 19개 테이블 DB, 데이터 확충/검수, `/admin` + 서버 인증 + API 설정 이전 |

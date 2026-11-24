@@ -112,3 +112,4 @@
 
 - `GET /api/places`, `POST /api/chat`: P2~P5 전환 기간 동안 신규 통합 DB/컨시어지 서비스를 호출하는 어댑터로 호환성을 유지하여 기존 테스트·클라이언트 손상을 방지합니다.
 - 구 `POST/DELETE /api/settings/*` 변경 엔드포인트는 P5에서 관리자 인증을 강제하도록 승격하며, 공개 엔드포인트는 `GET /api/settings/public-map-config`만 유지합니다.
+

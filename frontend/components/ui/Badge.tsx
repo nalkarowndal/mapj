@@ -1,9 +1,11 @@
 import React from "react";
 
-export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-  variant?: "default" | "primary" | "accent" | "success" | "warning" | "outline";
+export interface BadgeProps {
+  children: React.ReactNode;
+  variant?: "default" | "primary" | "accent" | "success" | "warning" | "subtle";
   size?: "sm" | "md";
   dot?: boolean;
+  className?: string;
 }
 
 export const Badge: React.FC<BadgeProps> = ({
@@ -12,37 +14,46 @@ export const Badge: React.FC<BadgeProps> = ({
   size = "sm",
   dot = false,
   className = "",
-  ...props
 }) => {
   const sizeStyles = {
-    sm: "text-[11px] px-2 py-0.5 rounded-lg gap-1",
-    md: "text-xs px-2.5 py-1 rounded-xl gap-1.5",
+    sm: "text-[12px] px-2.5 py-0.5 gap-1.5",
+    md: "text-[13px] px-3 py-1 gap-1.5",
   };
 
   const variantStyles = {
-    default: "bg-[#1E293B] text-slate-300 border border-white/10",
-    primary: "bg-blue-500/15 text-blue-300 border border-blue-400/25",
-    accent: "bg-amber-400/15 text-[#FDE047] border border-amber-300/25",
-    success: "bg-emerald-500/15 text-emerald-300 border border-emerald-400/25",
-    warning: "bg-amber-500/15 text-amber-300 border border-amber-400/25",
-    outline: "bg-transparent text-slate-300 border border-white/15",
+    default:
+      "bg-[var(--bg-subtle)] text-[var(--text-secondary)] border border-[var(--border-default)]",
+    subtle:
+      "bg-[var(--bg-main)] text-[var(--text-secondary)] border border-[var(--border-default)]",
+    primary:
+      "bg-[var(--brand-primary)] text-white border border-transparent",
+    accent:
+      "bg-[var(--brand-accent-soft)] text-[var(--brand-accent-text)] border border-[#B65C37]/25",
+    success:
+      "bg-[var(--status-open-bg)] text-[var(--status-open)] border border-[#246142]/20",
+    warning:
+      "bg-[var(--status-warn-bg)] text-[var(--status-warn)] border border-[#8A5612]/20",
   };
 
   const dotColors = {
-    default: "bg-slate-400",
-    primary: "bg-blue-400",
-    accent: "bg-[#FDE047]",
-    success: "bg-emerald-400",
-    warning: "bg-amber-400",
-    outline: "bg-slate-300",
+    default: "bg-[var(--text-muted)]",
+    subtle: "bg-[var(--text-muted)]",
+    primary: "bg-white",
+    accent: "bg-[var(--brand-accent)]",
+    success: "bg-[var(--status-open)]",
+    warning: "bg-[var(--status-warn)]",
   };
 
   return (
     <span
-      className={`inline-flex items-center font-medium tracking-tight ${sizeStyles[size]} ${variantStyles[variant]} ${className}`}
-      {...props}
+      className={`inline-flex items-center font-medium rounded-full whitespace-nowrap leading-snug ${sizeStyles[size]} ${variantStyles[variant]} ${className}`}
     >
-      {dot && <span className={`w-1.5 h-1.5 rounded-full ${dotColors[variant]}`} />}
+      {dot && (
+        <span
+          aria-hidden="true"
+          className={`w-1.5 h-1.5 rounded-full ${dotColors[variant]}`}
+        />
+      )}
       {children}
     </span>
   );

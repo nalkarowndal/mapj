@@ -76,3 +76,4 @@ flowchart LR
 - **모바일 하단 내비게이션(5탭)**: `홈`, `탐색`, `지도`, `AI 추천`, `저장` (터치 타겟 최소 `44×44px`, `env(safe-area-inset-bottom)` 반영).
 - **320px 초소형 해상도 방어**: 헤더 텍스트 축약/아이콘 전환, 1열 카드 폴백, 가로 스크롤(`scrollWidth > innerWidth`) 0건 보장.
 - **키보드 및 스크린리더**: Skip-to-content 링크, 명확한 `focus-visible` 아웃라인(`#283A30`/`#B65C37`), 모달·드로어 포커스 트랩 및 `Esc` 닫기, `prefers-reduced-motion` 준수.
+
