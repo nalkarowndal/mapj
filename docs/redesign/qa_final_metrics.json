@@ -1,0 +1,126 @@
+{
+  "base_url": "http://localhost:3005",
+  "api_url": "http://127.0.0.1:8000",
+  "executed_at": "2026-11-24 15:16:53",
+  "suites": {
+    "security_backend": {
+      "pass": true,
+      "published_restaurants": 110
+    },
+    "ai_trust": {
+      "pass": true,
+      "live_ai_responses": "5/5",
+      "valid_db_ids": 110
+    },
+    "routes_seo_a11y": {
+      "pass": true,
+      "checked_routes": 16,
+      "404_status": 404
+    },
+    "performance_cwv": {
+      "pass": true,
+      "metrics": {
+        "/": {
+          "ttfb_ms": 159,
+          "dcl_ms": 245,
+          "load_ms": 779,
+          "fcp_ms": 636,
+          "lcp_ms": 636,
+          "cls": 0.0013,
+          "wall_ms": 1499
+        },
+        "/regions/seongbuk": {
+          "ttfb_ms": 57,
+          "dcl_ms": 382,
+          "load_ms": 580,
+          "fcp_ms": 396,
+          "lcp_ms": 396,
+          "cls": 0.0006,
+          "wall_ms": 1298
+        },
+        "/restaurants": {
+          "ttfb_ms": 72,
+          "dcl_ms": 321,
+          "load_ms": 491,
+          "fcp_ms": 320,
+          "lcp_ms": 340,
+          "cls": 0.004,
+          "wall_ms": 1197
+        },
+        "/restaurants/teolbo-godeuni-nowon": {
+          "ttfb_ms": 31,
+          "dcl_ms": 285,
+          "load_ms": 396,
+          "fcp_ms": 288,
+          "lcp_ms": 288,
+          "cls": 0.0012,
+          "wall_ms": 1109
+        },
+        "/concierge": {
+          "ttfb_ms": 22,
+          "dcl_ms": 104,
+          "load_ms": 295,
+          "fcp_ms": 232,
+          "lcp_ms": 232,
+          "cls": 0.0885,
+          "wall_ms": 1005
+        }
+      }
+    },
+    "responsive_9viewports": {
+      "pass": true,
+      "matrix": {
+        "320x700": {
+          "overflows": [],
+          "broken_images": [],
+          "pass": true
+        },
+        "360x800": {
+          "overflows": [],
+          "broken_images": [],
+          "pass": true
+        },
+        "390x844": {
+          "overflows": [],
+          "broken_images": [],
+          "pass": true
+        },
+        "430x932": {
+          "overflows": [],
+          "broken_images": [],
+          "pass": true
+        },
+        "768x1024": {
+          "overflows": [],
+          "broken_images": [],
+          "pass": true
+        },
+        "1024x768": {
+          "overflows": [],
+          "broken_images": [],
+          "pass": true
+        },
+        "1280x800": {
+          "overflows": [],
+          "broken_images": [],
+          "pass": true
+        },
+        "1440x900": {
+          "overflows": [],
+          "broken_images": [],
+          "pass": true
+        },
+        "1920x1080": {
+          "overflows": [],
+          "broken_images": [],
+          "pass": true
+        }
+      }
+    },
+    "map_and_admin_ui": {
+      "pass": true
+    }
+  },
+  "defects": [],
+  "overall_pass": true
+}

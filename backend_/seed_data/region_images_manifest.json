@@ -1,0 +1,202 @@
+{
+  "nowon": {
+    "hero_image_url": "/images/regions/region-nowon.jpg",
+    "hero_image_credit": "노원구 화랑대 철도공원·경춘선숲길 실제 풍경 (2025년 · 출처: Daum카페)",
+    "source_url": "https://cafe.daum.net/bk24friends/EiCW/1362",
+    "source_datetime": "2025-03-13",
+    "width": 1440,
+    "height": 814,
+    "gallery": [
+      {
+        "url": "/images/regions/region-nowon.jpg",
+        "alt": "노원구 화랑대 철도공원·경춘선숲길",
+        "credit": "노원구 화랑대 철도공원·경춘선숲길 실제 풍경 (2025년 · 출처: Daum카페)",
+        "source_url": "https://cafe.daum.net/bk24friends/EiCW/1362",
+        "source_datetime": "2025-03-13",
+        "width": 1440,
+        "height": 814,
+        "sharpness": 47.3
+      },
+      {
+        "url": "/images/regions/region-nowon-2.jpg",
+        "alt": "공릉동 경춘선숲길 카페거리",
+        "credit": "공릉동 경춘선숲길 카페거리 실제 풍경 (2026년 · 출처: 네이버블로그)",
+        "source_url": "http://blog.naver.com/churroseol/224436987132",
+        "source_datetime": "2026-10-10",
+        "width": 1121,
+        "height": 778,
+        "sharpness": 34.2
+      },
+      {
+        "url": "/images/regions/region-nowon-3.jpg",
+        "alt": "노원구 불암산 힐링타운 전경",
+        "credit": "노원구 불암산 힐링타운 전경 실제 풍경 (2026년 · 출처: 트레벌데일리)",
+        "source_url": "https://www.traveldaily.co.kr/news/articleView.html?idxno=70502",
+        "source_datetime": "2026-11-17",
+        "width": 1280,
+        "height": 853,
+        "sharpness": 31.1
+      }
+    ]
+  },
+  "dobong": {
+    "hero_image_url": "/images/regions/region-dobong.jpg",
+    "hero_image_credit": "도봉구 도봉산 자운봉·선인봉 실제 풍경 (2026년 · 출처: 티스토리)",
+    "source_url": "https://everytravelmoment.bdmstv.com/319",
+    "source_datetime": "2026-09-29",
+    "width": 969,
+    "height": 668,
+    "gallery": [
+      {
+        "url": "/images/regions/region-dobong.jpg",
+        "alt": "도봉구 도봉산 자운봉·선인봉",
+        "credit": "도봉구 도봉산 자운봉·선인봉 실제 풍경 (2026년 · 출처: 티스토리)",
+        "source_url": "https://everytravelmoment.bdmstv.com/319",
+        "source_datetime": "2026-09-29",
+        "width": 969,
+        "height": 668,
+        "sharpness": 30.4
+      },
+      {
+        "url": "/images/regions/region-dobong-2.jpg",
+        "alt": "도봉산 계곡 탐방로",
+        "credit": "도봉산 계곡 탐방로 실제 풍경 (2026년 · 출처: 티스토리)",
+        "source_url": "https://poortour.tistory.com/70",
+        "source_datetime": "2026-07-16",
+        "width": 940,
+        "height": 626,
+        "sharpness": 15.0
+      },
+      {
+        "url": "/images/regions/region-dobong-3.jpg",
+        "alt": "도봉구 서울창포원 전경",
+        "credit": "도봉구 서울창포원 전경 실제 풍경 (2024년 · 출처: 네이버블로그)",
+        "source_url": "http://blog.naver.com/cm9445/223322378897",
+        "source_datetime": "2024-01-14",
+        "width": 966,
+        "height": 727,
+        "sharpness": 29.9
+      }
+    ]
+  },
+  "gangbuk": {
+    "hero_image_url": "/images/regions/region-gangbuk.jpg",
+    "hero_image_credit": "강북구 4.19 카페거리 실제 풍경 (2026년 · 출처: 티스토리)",
+    "source_url": "http://blog.naver.com/moonsoo47/223071984507",
+    "source_datetime": "2023-04-12",
+    "width": 1200,
+    "height": 750,
+    "gallery": [
+      {
+        "url": "/images/regions/region-gangbuk.jpg",
+        "alt": "강북구 4.19 카페거리",
+        "credit": "강북구 4.19 카페거리 실제 풍경 (2026년 · 출처: 티스토리)",
+        "source_url": "https://everytravelmoment.bdmstv.com/237",
+        "source_datetime": "2026-09-14",
+        "width": 1019,
+        "height": 665,
+        "sharpness": 25.5
+      },
+      {
+        "url": "/images/regions/region-gangbuk-2.jpg",
+        "alt": "강북구 북한산·우이동 풍경",
+        "credit": "강북구 북한산·우이동 풍경 실제 풍경 (2026년 · 출처: 네이버블로그)",
+        "source_url": "http://blog.naver.com/hyunjin423/224438369078",
+        "source_datetime": "2026-10-11",
+        "width": 1292,
+        "height": 860,
+        "sharpness": 20.6
+      },
+      {
+        "url": "/images/regions/region-gangbuk-3.jpg",
+        "alt": "강북구 북서울꿈의숲",
+        "credit": "강북구 북서울꿈의숲 실제 풍경 (2025년 · 출처: 티스토리)",
+        "source_url": "https://urbngreen.tistory.com/5",
+        "source_datetime": "2025-05-13",
+        "width": 1280,
+        "height": 881,
+        "sharpness": 37.0
+      }
+    ]
+  },
+  "jungnang": {
+    "hero_image_url": "/images/regions/region-jungnang.jpg",
+    "hero_image_credit": "중랑구 용마폭포공원·용마산 실제 풍경 (2026년 · 출처: 티스토리)",
+    "source_url": "http://blog.naver.com/gksqlc0416/224443748450",
+    "source_datetime": "2026-10-16",
+    "width": 966,
+    "height": 725,
+    "gallery": [
+      {
+        "url": "/images/regions/region-jungnang.jpg",
+        "alt": "중랑구 용마폭포공원·용마산",
+        "credit": "중랑구 용마폭포공원·용마산 실제 풍경 (2026년 · 출처: 티스토리)",
+        "source_url": "https://mehoo.tistory.com/154",
+        "source_datetime": "2026-02-18",
+        "width": 1440,
+        "height": 960,
+        "sharpness": 18.7
+      },
+      {
+        "url": "/images/regions/region-jungnang-2.jpg",
+        "alt": "중랑구 중랑장미공원",
+        "credit": "중랑구 중랑장미공원 실제 풍경 (2026년 · 출처: 뉴스1)",
+        "source_url": "https://v.daum.net/v/20260515140204785",
+        "source_datetime": "2026-05-15",
+        "width": 1400,
+        "height": 1005,
+        "sharpness": 39.4
+      },
+      {
+        "url": "/images/regions/region-jungnang-3.jpg",
+        "alt": "중랑구 중랑천 수변 산책로",
+        "credit": "중랑구 중랑천 수변 산책로 실제 풍경 (2026년 · 출처: 티스토리)",
+        "source_url": "https://goodpapa79.tistory.com/535",
+        "source_datetime": "2026-03-12",
+        "width": 1440,
+        "height": 953,
+        "sharpness": 13.5
+      }
+    ]
+  },
+  "seongbuk": {
+    "hero_image_url": "/images/regions/region-seongbuk.jpg",
+    "hero_image_credit": "성북구 한양도성 성곽길 실제 풍경 (2026년 · 출처: 네이버블로그)",
+    "source_url": "http://blog.naver.com/eclimb1213/224410231860",
+    "source_datetime": "2026-09-13",
+    "width": 966,
+    "height": 642,
+    "gallery": [
+      {
+        "url": "/images/regions/region-seongbuk.jpg",
+        "alt": "성북구 한양도성 성곽길",
+        "credit": "성북구 한양도성 성곽길 실제 풍경 (2026년 · 출처: 네이버블로그)",
+        "source_url": "http://blog.naver.com/tour_toctoc/224137374193",
+        "source_datetime": "2026-01-31",
+        "width": 1200,
+        "height": 675,
+        "sharpness": 24.1
+      },
+      {
+        "url": "/images/regions/region-seongbuk-2.jpg",
+        "alt": "성북구 성북동 전통 한옥",
+        "credit": "성북구 성북동 전통 한옥 실제 풍경 (2026년 · 출처: 트레벌데일리)",
+        "source_url": "https://www.traveldaily.co.kr/news/articleView.html?idxno=70840",
+        "source_datetime": "2026-11-13",
+        "width": 1280,
+        "height": 853,
+        "sharpness": 28.8
+      },
+      {
+        "url": "/images/regions/region-seongbuk-3.jpg",
+        "alt": "성북구 성북동 길상사",
+        "credit": "성북구 성북동 길상사 실제 풍경 (2026년 · 출처: 티스토리)",
+        "source_url": "https://lovegaram.tistory.com/227",
+        "source_datetime": "2026-11-20",
+        "width": 1440,
+        "height": 810,
+        "sharpness": 47.0
+      }
+    ]
+  }
+}

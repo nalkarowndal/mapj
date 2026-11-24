@@ -1,0 +1,47 @@
+/* DONGBUK TABLE — 동북미식 공식 디자인 토큰 (WCAG 2.2 AA 검증 기반) */
+:root {
+  /* Core Palette (Specification 6.2) */
+  --bg-main: #f8f5ef;
+  --bg-surface: #ffffff;
+  --bg-subtle: #efeae1;
+  --bg-subtle-hover: #e6dfd2;
+
+  --brand-primary: #283a30;
+  --brand-primary-hover: #1e2d25;
+  --brand-primary-soft: rgba(40, 58, 48, 0.08);
+
+  --brand-accent: #b65c37;
+  --brand-accent-hover: #9c4a28;
+  --brand-accent-text: #9c4a28; /* #F8F5EF 배경 위 일반 본문 크기 WCAG AA(>=4.5:1) 보정 */
+  --brand-accent-soft: rgba(182, 92, 55, 0.1);
+
+  --text-primary: #252622;
+  --text-secondary: #5e564e; /* #F8F5EF/#EFEAE1 위 WCAG AA(>=4.5:1) 안정 확보 */
+  --text-muted: #736a61; /* #FFFFFF/#F8F5EF 위 WCAG AA 충족 */
+
+  --border-default: #e6e0d6;
+  --border-strong: #cfc7ba;
+
+  /* Semantic Status (Warm Editorial Tone, WCAG AA) */
+  --status-open: #246142;
+  --status-open-bg: #ebf4ef;
+  --status-closed: #8f3528;
+  --status-closed-bg: #faecea;
+  --status-warn: #8a5612;
+  --status-warn-bg: #fbf3e4;
+
+  /* Radius & Elevation */
+  --radius-btn: 10px;
+  --radius-card: 14px;
+  --radius-pill: 9999px;
+
+  --shadow-subtle: 0 1px 2px rgba(37, 38, 34, 0.05);
+  --shadow-card: 0 4px 16px rgba(37, 38, 34, 0.05);
+  --shadow-popover: 0 12px 32px rgba(37, 38, 34, 0.12);
+
+  /* Layout Rhythm */
+  --container-max: 1360px;
+  --header-height: 72px;
+  --mobile-nav-height: 64px;
+}
+

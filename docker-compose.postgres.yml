@@ -1,0 +1,28 @@
+# 동북미식 (DONGBUK TABLE) 운영/스테이징용 PostgreSQL 16 Docker Compose
+# 실행: docker compose -f docker-compose.postgres.yml up -d
+# 이후 backend_/.env 에 DATABASE_URL=postgresql+psycopg://dongbuk:dongbuk_dev_pw@localhost:5432/dongbuk_table 설정
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: dongbuk_table_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: dongbuk_table
+      POSTGRES_USER: dongbuk
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dongbuk_dev_pw}
+      TZ: Asia/Seoul
+    ports:
+      - "5432:5432"
+    volumes:
+      - dongbuk_pg_data:/var/lib/postgresql/data
+      - ./docs/redesign/db/postgresql_schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dongbuk -d dongbuk_table"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  dongbuk_pg_data:
+
