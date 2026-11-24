@@ -14,8 +14,8 @@
 | **P1** | 브랜드 및 디자인 시스템 구축 | **PASS** | 2026-11-24 | `DESIGN_SYSTEM.md`, `VISUAL_DIRECTION.md`, `COMPONENT_GUIDE.md`, `ASSET_MANIFEST.md`, 에디토리얼 이미지 10종 + 플레이스홀더 SVG, 공통 UI 12종, 4개 해상도 시각 QA PASS |
 | **P2** | 홈페이지 및 지역별 페이지 구현 | **PASS** | 2026-11-24 | 백엔드 단일 Public API(28건 100% 카카오 실존 검증), 신규 홈페이지(`/`), `/regions`, 5개 자치구(`/regions/[slug]`) 구현 및 4개 해상도+전 페이지 시각 QA PASS |
 | **P3** | 맛집 탐색 및 상세 페이지 구현 | **PASS** | 2026-11-24 | `/restaurants`(URL searchParams·상세필터·정렬·페이지네이션), `/restaurants/[slug]`(JSON-LD·미니맵·방문정보), `/collections/*`, `/saved`(LocalStorage), `/about`, `/feedback`, `sitemap.xml`, `robots.txt` 및 전체 E2E PASS |
-| **P4** | 지도 및 AI 추천 기능 고도화 | 대기 (사용자 승인 후 착수) | - | `/map`, `/concierge` |
-| **P5** | 데이터베이스 및 관리자 시스템 | 대기 | - | 19개 테이블 DB, 데이터 확충/검수, `/admin` + 서버 인증 + API 설정 이전 |
+| **P4** | 지도 및 AI 추천 기능 고도화 | **PASS** | 2026-11-24 | `/map`(Kakao Maps SDK 7단계 라이프사이클·`CustomOverlay`·데스크톱 38:62·모바일 바텀시트·장애 fallback), `/concierge`(DB 선조회·실존 ID 제한 Groq AI·환각 차단·기록 아코디언) 및 지도 회귀+AI 신뢰성 QA PASS |
+| **P5** | 데이터베이스 및 관리자 시스템 | 대기 (사용자 승인 후 착수) | - | 19개 테이블 DB, 데이터 확충/검수, `/admin` + 서버 인증 + API 설정 이전 |
 | **P6** | 자동 QA 및 최종 품질 고도화 | 대기 | - | 9대 해상도 Playwright QA, 보안/SEO/성능 검수, README |
 
 ---
@@ -29,4 +29,19 @@
 - 기존 테스트(`test_mock_kakao_map_live.py`) 실측 실행: Mock Kakao 지도 캔버스 렌더링 PASS, `SettingsModal` 키 기등록 상태 placeholder 불일치로 Timeout FAIL 확인(기존 `v2_3` 아카이브 스크린샷 원복 보존).
 - 리디자인 전 기준(Baseline) 스크린샷 4종(`1440×900`, `768×1024`, `390×844`, `320×700`) 캡처 및 육안 시각 결함 진단 완료.
 - P0 필수 산출물 6종 작성 완료 → 사용자 승인 후 P1 착수 예정.
+
+## P4 완료 기록 (2026-11-24)
+
+- **지도 탐색 (`/map`)**:
+  - `frontend/components/map/MapExplorer.tsx` 및 `frontend/app/map/page.tsx` 구현.
+  - 기존 7단계 Kakao Maps SDK 라이프사이클(`config_loading` → `key_missing` → `sdk_loading` → `sdk_ready` → `map_initializing` → `map_ready` → `error`), `ResizeObserver + relayout()`, 단일 지도 인스턴스 재사용 및 `panTo()` 전환을 그대로 보존하고 신규 warm editorial 디자인으로 통합.
+  - 데스크톱(좌측 38% 목록 + 우측 62% 지도), 모바일(전체 화면 지도 + 접기/펼치기 바텀시트), "현 지도 영역에서 재검색", `CustomOverlay` 기반 깔끔한 마커 라벨, 키 미설정/SDK 장애 시 가짜 벡터 지도 및 관리자 API 설정을 노출하지 않는 안전한 대체 안내 UI 구현.
+- **AI 맛집 추천 (`/concierge`)**:
+  - `backend_/routers/concierge.py` (`POST /api/concierge/recommend`), `frontend/store/conciergeSlice.ts`, `frontend/components/concierge/ConciergeClient.tsx`, `frontend/app/concierge/page.tsx` 구현.
+  - 자연어 질의 구조화 → 단일 검증 카탈로그(`gourmet_catalog`) 선조회 → 실존 매장 ID만 Groq LLM에 전달하여 추천 이유 생성(`qwen/qwen3.8-27b` 자동 폴백 포함) → 외부 AI 장애 시 DB 기반 안전 Fallback 전환.
+  - 지시문 §15.2 예시 질문 5종 전부 실존 DB ID 반환(`is_fallback=False`) 및 미등록/불가능한 질의 2종 0건 반환(환각 차단) 실측 검증 PASS.
+  - UI에서 `확인된 매장 정보`와 `AI 추천 이유` 시각적 명확 분리 및 접이식 `이전 추천 기록` 구현.
+- **빌드 및 시각/회귀 QA**:
+  - `next build` 16개 라우트 TypeScript/프로덕션 빌드 PASS.
+  - Playwright 지도 회귀(실제 타일·지역 전환·미설정 fallback·모바일 바텀시트) + AI 컨시어지 데스크톱/모바일 검수 `failures=0`, 콘솔 오류 `0`건, 스크린샷 6종 육안 확인 PASS (`docs/redesign/screenshots/p4_map_concierge/`).
 

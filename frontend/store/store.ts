@@ -2,12 +2,14 @@
 import { configureStore } from "@reduxjs/toolkit";
 import chatReducer from "./chatSlice";
 import bookmarksReducer from "./bookmarksSlice";
+import conciergeReducer from "./conciergeSlice";
 
 export const makeStore = () => {
   return configureStore({
     reducer: {
       chat: chatReducer,
       bookmarks: bookmarksReducer,
+      concierge: conciergeReducer,
     },
   });
 };

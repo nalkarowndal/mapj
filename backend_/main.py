@@ -25,6 +25,7 @@ from places_database import (
 )
 from settings_manager import settings_mgr
 from routers.public import router as public_gourmet_router
+from routers.concierge import router as concierge_router
 
 ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000").split(",")
 
@@ -43,6 +44,7 @@ app.add_middleware(
 )
 
 app.include_router(public_gourmet_router)
+app.include_router(concierge_router)
 
 _cached_groq_key: Optional[str] = None
 _cached_groq_client: Optional[Groq] = None
