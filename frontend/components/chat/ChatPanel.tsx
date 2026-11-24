@@ -15,7 +15,7 @@ import { ChatMessageItem } from "./ChatMessageItem";
 import { ChatInputArea } from "./ChatInputArea";
 import { QuickPromptChips } from "./QuickPromptChips";
 import { ChatStatusIndicator } from "./ChatStatusIndicator";
-import { FaArrowDown } from "react-icons/fa";
+import { FaArrowDown, FaUtensils } from "react-icons/fa";
 
 export const ChatPanel: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -31,8 +31,6 @@ export const ChatPanel: React.FC = () => {
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showScrollBottomBtn, setShowScrollBottomBtn] = useState(false);
-
-  // [Bug 1-5 해결]: 요청 취소 및 비동기 경쟁 상태 방지용 AbortController
   const abortControllerRef = useRef<AbortController | null>(null);
 
   const handleScroll = useCallback(() => {
@@ -57,19 +55,16 @@ export const ChatPanel: React.FC = () => {
     }
   }, [messages, isLoading, showScrollBottomBtn]);
 
-  // 언마운트 시 진행 중인 요청 취소
   useEffect(() => {
     return () => {
       abortControllerRef.current?.abort();
     };
   }, []);
 
-  // [Bug 1-5 & 1-6 해결]: 실시간 네트워크 상태 연결 및 이전 요청 안전 취소
   const handleSendQuery = async (queryText?: string) => {
     const textToSend = (queryText || inputText).trim();
     if (!textToSend || isLoading) return;
 
-    // 이전 비동기 요청 취소
     abortControllerRef.current?.abort();
     const abortController = new AbortController();
     abortControllerRef.current = abortController;
@@ -88,7 +83,7 @@ export const ChatPanel: React.FC = () => {
     );
     dispatch(setInputText(""));
     dispatch(setIsLoading(true));
-    dispatch(setLoadingStep("질문 전송 및 지역 탐색 분석 중..."));
+    dispatch(setLoadingStep(`${selectedDistrict} 미식 데이터베이스 및 메뉴 분석 중...`));
 
     const history = messages.slice(-6).map((m) => ({
       role: (m.sender === "user" ? "user" : "assistant") as "user" | "assistant",
@@ -110,9 +105,7 @@ export const ChatPanel: React.FC = () => {
         }),
       });
 
-      // 요청 도중 지역이 바뀌었거나 세션이 전환된 경우 응답 폐기
       if (capturedNonce !== requestNonce) {
-        console.warn("지역/세션 변경으로 인해 이전 요청 결과를 안전하게 폐기합니다.");
         return;
       }
 
@@ -120,7 +113,7 @@ export const ChatPanel: React.FC = () => {
         throw new Error(`서버 응답 오류 (상태코드: ${response.status})`);
       }
 
-      dispatch(setLoadingStep("추천 정보 정리 및 답변 렌더링 중..."));
+      dispatch(setLoadingStep("미식 에디터 추천 카드 및 지도 마커 연동 중..."));
       const data = await response.json();
 
       if (capturedNonce !== requestNonce) return;
@@ -138,15 +131,14 @@ export const ChatPanel: React.FC = () => {
         })
       );
 
-      if (typeof data.show_map === "boolean") {
-        dispatch(setShowMap(data.show_map));
+      if (typeof data.show_map === "boolean" && data.show_map) {
+        dispatch(setShowMap(true));
       }
       if (Array.isArray(data.places) && data.places.length > 0) {
         dispatch(setPlaces(data.places));
       }
     } catch (error: any) {
       if (error.name === "AbortError") {
-        console.log("사용자 요청에 의해 이전 비동기 작업이 취소되었습니다.");
         return;
       }
 
@@ -157,7 +149,7 @@ export const ChatPanel: React.FC = () => {
       dispatch(
         addMessage({
           id: errorMessageId,
-          text: `⚠️ **서버 연결 실패**: 백엔드 서버와의 통신에 실패했습니다.\n\n다시 시도하시거나 상단 **설정** 메뉴에서 API 연결 상태를 점검해 주세요.`,
+          text: `⚠️ **AI 미식 서버 연결 실패**: 백엔드 서버와의 통신에 실패했습니다.\n\n좌측의 **${selectedDistrict} 대표 맛집 큐레이션 카드**는 오프라인에서도 바로 탐색하실 수 있으며, AI 대화를 위해 서버 상태를 확인해 주세요.`,
           sender: "ai",
           timestamp: Date.now(),
           status: "error",
@@ -177,19 +169,32 @@ export const ChatPanel: React.FC = () => {
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full overflow-hidden bg-[#0F172A]/40 relative">
+    <div className="flex-1 flex flex-col h-full overflow-hidden bg-[#0F172A]/60 relative">
+      {/* Compact Concierge Header Banner */}
+      <div className="px-4 py-2 bg-[#141E33]/90 border-b border-white/10 flex items-center justify-between shrink-0">
+        <div className="flex items-center gap-2">
+          <span className="w-6 h-6 rounded-lg bg-amber-400/20 text-[#FDE047] flex items-center justify-center text-xs">
+            <FaUtensils size={11} />
+          </span>
+          <span className="text-xs font-extrabold text-white">
+            AI 미식 소믈리에 & 맛집 컨시어지
+          </span>
+        </div>
+        <span className="text-[11px] text-amber-300/90 font-semibold">
+          {selectedDistrict} 맞춤 추천
+        </span>
+      </div>
+
       {/* Scrollable Messages Area */}
       <div
         ref={scrollContainerRef}
         onScroll={handleScroll}
-        className="flex-1 overflow-y-auto p-3 sm:p-6 space-y-4 sm:space-y-5"
+        className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3.5"
       >
-        {/* Quick Prompts on initial conversation */}
         {messages.length <= 1 && (
           <QuickPromptChips onSelectPrompt={(prompt) => handleSendQuery(prompt)} />
         )}
 
-        {/* Message Bubble List */}
         {messages.map((msg) => (
           <ChatMessageItem
             key={msg.id}
@@ -210,28 +215,25 @@ export const ChatPanel: React.FC = () => {
           />
         ))}
 
-        {/* Loading Indicator with Real Steps */}
         {isLoading && <ChatStatusIndicator step={loadingStep} />}
       </div>
 
-      {/* Floating Scroll to Bottom Button */}
       {showScrollBottomBtn && (
         <button
           onClick={() => scrollToBottom("smooth")}
           aria-label="최신 메시지로 스크롤"
-          className="absolute bottom-24 right-5 sm:right-6 z-20 w-9 h-9 rounded-full bg-[#1E293B] hover:bg-slate-700 text-[#FDE047] border border-white/15 shadow-xl flex items-center justify-center transition-all cursor-pointer animate-bounce"
+          className="absolute bottom-24 right-5 z-20 w-8 h-8 rounded-full bg-[#1E293B] hover:bg-slate-700 text-[#FDE047] border border-white/15 shadow-xl flex items-center justify-center transition-all cursor-pointer animate-bounce"
         >
-          <FaArrowDown size={13} />
+          <FaArrowDown size={12} />
         </button>
       )}
 
-      {/* Input Form Area */}
       <ChatInputArea
         value={inputText}
         onChange={(val) => dispatch(setInputText(val))}
         onSend={() => handleSendQuery()}
         isLoading={isLoading}
-        placeholder={`[${selectedDistrict}] 맛집, 카페, 학원, 문화시설을 물어보세요...`}
+        placeholder={`[${selectedDistrict}] 오늘 끌리는 메뉴, 노포, 데이트 맛집을 물어보세요...`}
       />
     </div>
   );

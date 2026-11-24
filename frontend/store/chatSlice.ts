@@ -8,6 +8,7 @@ import {
   FullSession,
   SettingsStatusResponse,
 } from "@/lib/types";
+import { INITIAL_CURATED_PLACES } from "@/lib/districtData";
 
 interface ChatState {
   messages: ChatMessage[];
@@ -16,6 +17,7 @@ interface ChatState {
   loadingStep: string;
   showMap: boolean;
   places: PlaceInfo[];
+  bookmarkedIds: string[];
   selectedPlaceId: string | null;
   mobileView: "chat" | "map";
   mobileTab: MobileTab;
@@ -29,25 +31,28 @@ interface ChatState {
   settingsStatus: SettingsStatusResponse | null;
   settingsTab: "groq" | "kakao_rest" | "kakao_js" | "system";
   mapReloadTrigger: number;
-  requestNonce: number; // 요청 정합성 관리용 일련번호 (지역 변경/세션 전환 시 증가)
+  requestNonce: number;
 }
 
 const initialSessionId = "session-initial";
+const initialDistrict: DistrictName = "노원구";
+const initialDistrictPlaces = INITIAL_CURATED_PLACES[initialDistrict] || [];
+
 const initialMessages: ChatMessage[] = [
   {
     id: "init-1",
-    text: "안녕하세요! 서울 동북권 맞춤형 **AI 로컬 어시스턴트**입니다. 🤖\n\n선택하신 자치구의 **맛집, 카페, 학원가, 문화 명소**를 AI와 실시간 인터랙티브 지도로 탐색해 보세요. 아래 추천 질문을 누르시거나 직접 물어보세요!",
+    text: "안녕하세요! 서울 동북권 미식 가이드 **맛탐정 동북 AI 컨시어지**입니다. 🍽️\n\n좌측과 중앙의 **맛집 큐레이션 쇼케이스**에서 자치구별 엄선된 노포·고기·베이커리 맛집을 바로 둘러보시거나, 오늘의 모임 목적·예산·취향을 저에게 물어보세요!",
     sender: "ai",
-    district: "노원구",
+    district: initialDistrict,
   },
 ];
 
 const initialSession: FullSession = {
   id: initialSessionId,
-  title: "노원구 첫 대화",
-  district: "노원구",
+  title: "노원구 미식 탐색",
+  district: initialDistrict,
   messages: initialMessages,
-  places: [],
+  places: initialDistrictPlaces,
   createdAt: 0,
   updatedAt: 0,
 };
@@ -57,12 +62,13 @@ const initialState: ChatState = {
   inputText: "",
   isLoading: false,
   loadingStep: "",
-  showMap: false,
-  places: [],
-  selectedPlaceId: null,
+  showMap: true,
+  places: initialDistrictPlaces,
+  bookmarkedIds: ["nw-01", "db-01", "gb-01", "jn-02", "sb-01"],
+  selectedPlaceId: initialDistrictPlaces[0]?.id || null,
   mobileView: "chat",
-  mobileTab: "chat",
-  selectedDistrict: "노원구",
+  mobileTab: "places",
+  selectedDistrict: initialDistrict,
   activeCategory: "전체",
   isSidebarOpen: true,
   isMobileDrawerOpen: false,
@@ -99,12 +105,10 @@ export const chatSlice = createSlice({
     addMessage: (state, action: PayloadAction<ChatMessage>) => {
       state.messages.push(action.payload);
 
-      // 현재 활성 세션에 메시지 동기화
       const current = state.sessions[state.activeSessionId];
       if (current) {
         current.messages = state.messages;
         current.updatedAt = Date.now();
-        // 첫 사용자 메시지로 세션 제목 자동 설정
         if (
           action.payload.sender === "user" &&
           state.messages.filter((m) => m.sender === "user").length === 1
@@ -115,14 +119,27 @@ export const chatSlice = createSlice({
     },
     setPlaces: (state, action: PayloadAction<PlaceInfo[]>) => {
       state.places = action.payload;
-      if (action.payload.length > 0 && !state.selectedPlaceId) {
+      if (action.payload.length > 0) {
         state.selectedPlaceId = action.payload[0].id;
       }
-      // 세션에 장소 목록 동기화
       const current = state.sessions[state.activeSessionId];
       if (current) {
         current.places = action.payload;
         current.updatedAt = Date.now();
+      }
+    },
+    resetDistrictPlaces: (state) => {
+      const curated = INITIAL_CURATED_PLACES[state.selectedDistrict] || [];
+      state.places = curated;
+      state.selectedPlaceId = curated[0]?.id || null;
+      state.activeCategory = "전체";
+    },
+    toggleBookmark: (state, action: PayloadAction<string>) => {
+      const id = action.payload;
+      if (state.bookmarkedIds.includes(id)) {
+        state.bookmarkedIds = state.bookmarkedIds.filter((item) => item !== id);
+      } else {
+        state.bookmarkedIds.push(id);
       }
     },
     setSelectedPlaceId: (state, action: PayloadAction<string | null>) => {
@@ -136,30 +153,27 @@ export const chatSlice = createSlice({
       state.mobileTab = action.payload;
       state.mobileView = action.payload === "map" ? "map" : "chat";
     },
-    // [Bug 1-10 해결]: 모바일 지도 닫기 시 화면 탭까지 안전하게 복귀
     closeMap: (state) => {
       state.showMap = false;
       if (state.mobileTab === "map") {
-        state.mobileTab = "chat";
+        state.mobileTab = "places";
         state.mobileView = "chat";
       }
     },
-    // [Bug 1-4 해결]: 자치구 변경 시 이전 장소 목록 정리 및 요청 정합성 관리
     setSelectedDistrict: (state, action: PayloadAction<DistrictName>) => {
       if (state.selectedDistrict !== action.payload) {
         state.selectedDistrict = action.payload;
-        // 이전 지역 결과가 새 지역 추천으로 남지 않도록 초기화
-        state.places = [];
-        state.selectedPlaceId = null;
-        state.showMap = false;
+        const defaultPlaces = INITIAL_CURATED_PLACES[action.payload] || [];
+        state.places = defaultPlaces;
+        state.selectedPlaceId = defaultPlaces[0]?.id || null;
+        state.showMap = true;
         state.activeCategory = "전체";
-        state.requestNonce += 1; // 진행 중인 이전 지역 비동기 응답 폐기용
+        state.requestNonce += 1;
 
-        // 현재 세션의 자치구 정보 갱신
         const current = state.sessions[state.activeSessionId];
         if (current) {
           current.district = action.payload;
-          current.places = [];
+          current.places = defaultPlaces;
         }
       }
     },
@@ -172,11 +186,9 @@ export const chatSlice = createSlice({
     setSidebarOpen: (state, action: PayloadAction<boolean>) => {
       state.isSidebarOpen = action.payload;
     },
-    // [Bug 1-9 해결]: 모바일 전용 드로어 열림 상태 관리
     setMobileDrawerOpen: (state, action: PayloadAction<boolean>) => {
       state.isMobileDrawerOpen = action.payload;
     },
-    // 설정 모달 열림 상태 관리
     setSettingsOpen: (state, action: PayloadAction<boolean>) => {
       state.isSettingsOpen = action.payload;
     },
@@ -199,24 +211,22 @@ export const chatSlice = createSlice({
     setSettingsStatus: (state, action: PayloadAction<SettingsStatusResponse | null>) => {
       state.settingsStatus = action.payload;
     },
-    // [Bug 1-11 해결]: 새 대화 생성 및 기존 세션 저장
     startNewChat: (
       state,
       action: PayloadAction<{ sessionId?: string; timestamp?: number } | void>
     ) => {
-      // 1. 현재 세션 스냅샷 저장
       if (state.sessions[state.activeSessionId]) {
         state.sessions[state.activeSessionId].messages = state.messages;
         state.sessions[state.activeSessionId].places = state.places;
       }
 
-      // 2. 새 세션 초기화 (payload 파라미터 우선 적용)
       const now = action?.payload?.timestamp || Date.now();
       const newSessionId = action?.payload?.sessionId || `session-${now}`;
+      const defaultPlaces = INITIAL_CURATED_PLACES[state.selectedDistrict] || [];
       const newMessages: ChatMessage[] = [
         {
           id: `init-${now}`,
-          text: `**${state.selectedDistrict}** 새로운 대화를 시작합니다. 🤖\n\n무엇을 찾아드릴까요? 추천 질문을 누르시거나 찾으시는 장소나 분야를 입력해 주세요.`,
+          text: `**${state.selectedDistrict}** 미식 컨시어지 세션을 새로 시작합니다. 🍽️\n\n어떤 맛집을 찾으시나요? 노포, 고기/구이, 베이커리 카페, 데이트 코스 등 원하시는 메뉴를 물어보세요.`,
           sender: "ai",
           district: state.selectedDistrict,
         },
@@ -224,10 +234,10 @@ export const chatSlice = createSlice({
 
       const newSession: FullSession = {
         id: newSessionId,
-        title: `${state.selectedDistrict} 새 대화`,
+        title: `${state.selectedDistrict} 미식 탐색`,
         district: state.selectedDistrict,
         messages: newMessages,
-        places: [],
+        places: defaultPlaces,
         createdAt: now,
         updatedAt: now,
       };
@@ -235,14 +245,13 @@ export const chatSlice = createSlice({
       state.sessions[newSessionId] = newSession;
       state.activeSessionId = newSessionId;
       state.messages = newMessages;
-      state.places = [];
-      state.selectedPlaceId = null;
-      state.showMap = false;
+      state.places = defaultPlaces;
+      state.selectedPlaceId = defaultPlaces[0]?.id || null;
+      state.showMap = true;
       state.inputText = "";
       state.requestNonce += 1;
       state.isMobileDrawerOpen = false;
     },
-    // [Bug 1-11 해결]: 기존 세션 완벽 복구
     switchSession: (state, action: PayloadAction<string>) => {
       const targetSessionId = action.payload;
       if (targetSessionId === state.activeSessionId) {
@@ -250,63 +259,60 @@ export const chatSlice = createSlice({
         return;
       }
 
-      // 1. 현재 세션 저장
       if (state.sessions[state.activeSessionId]) {
         state.sessions[state.activeSessionId].messages = state.messages;
         state.sessions[state.activeSessionId].places = state.places;
       }
 
-      // 2. 대상 세션 로드
       const target = state.sessions[targetSessionId];
       if (target) {
         state.activeSessionId = target.id;
         state.messages = target.messages || [];
-        state.places = target.places || [];
+        const fallbackPlaces = INITIAL_CURATED_PLACES[target.district] || [];
+        state.places = target.places?.length ? target.places : fallbackPlaces;
         state.selectedDistrict = target.district;
-        state.selectedPlaceId = target.places?.length > 0 ? target.places[0].id : null;
-        state.showMap = target.places?.length > 0;
+        state.selectedPlaceId = state.places[0]?.id || null;
+        state.showMap = true;
         state.requestNonce += 1;
       }
       state.isMobileDrawerOpen = false;
     },
-    // [Bug 1-11 해결]: 세션 삭제
     deleteSession: (state, action: PayloadAction<string>) => {
       const sessionToDelete = action.payload;
       delete state.sessions[sessionToDelete];
 
-      // 삭제한 세션이 현재 세션인 경우 남아있는 세션으로 전환하거나 새로 생성
       if (state.activeSessionId === sessionToDelete) {
         const remainingKeys = Object.keys(state.sessions);
         if (remainingKeys.length > 0) {
           const nextSession = state.sessions[remainingKeys[0]];
           state.activeSessionId = nextSession.id;
           state.messages = nextSession.messages;
-          state.places = nextSession.places;
+          const fallbackPlaces = INITIAL_CURATED_PLACES[nextSession.district] || [];
+          state.places = nextSession.places?.length ? nextSession.places : fallbackPlaces;
           state.selectedDistrict = nextSession.district;
-          state.selectedPlaceId = nextSession.places?.[0]?.id || null;
-          state.showMap = nextSession.places?.length > 0;
+          state.selectedPlaceId = state.places[0]?.id || null;
+          state.showMap = true;
         } else {
-          // 남은 세션이 없으면 새 대화 자동 생성
           const newId = `session-${Date.now()}`;
+          const defaultPlaces = INITIAL_CURATED_PLACES[state.selectedDistrict] || [];
           const newSession: FullSession = {
             id: newId,
-            title: `${state.selectedDistrict} 새 대화`,
+            title: `${state.selectedDistrict} 미식 탐색`,
             district: state.selectedDistrict,
             messages: initialMessages,
-            places: [],
+            places: defaultPlaces,
             createdAt: Date.now(),
             updatedAt: Date.now(),
           };
           state.sessions[newId] = newSession;
           state.activeSessionId = newId;
           state.messages = initialMessages;
-          state.places = [];
-          state.selectedPlaceId = null;
-          state.showMap = false;
+          state.places = defaultPlaces;
+          state.selectedPlaceId = defaultPlaces[0]?.id || null;
+          state.showMap = true;
         }
       }
     },
-    // 세션 이름 변경
     renameSession: (
       state,
       action: PayloadAction<{ sessionId: string; title: string }>
@@ -318,8 +324,6 @@ export const chatSlice = createSlice({
     },
     clearAllMessages: (state) => {
       state.messages = [];
-      state.places = [];
-      state.selectedPlaceId = null;
     },
   },
 });
@@ -331,6 +335,8 @@ export const {
   setShowMap,
   addMessage,
   setPlaces,
+  resetDistrictPlaces,
+  toggleBookmark,
   setSelectedPlaceId,
   setMobileView,
   setMobileTab,

@@ -14,10 +14,28 @@ export interface PlaceInfo {
   is_registered: boolean;
   description: string;
   tags?: string[];
+  rating?: number;
+  review_count?: number;
+  signature_menu?: string[];
+  price_range?: string;
+  opening_hours?: string;
+  parking?: string;
+  atmosphere?: string;
+  badge?: string;
   data_source?: string;
   verification_status?: "reference" | "live_verified";
   verified_at?: string;
   kakao_url?: string;
+}
+
+export interface CurationTheme {
+  id: string;
+  title: string;
+  subtitle: string;
+  emoji: string;
+  gradient: string;
+  filterTag: string;
+  prompt: string;
 }
 
 export interface ChatMessage {
@@ -62,12 +80,20 @@ export interface DistrictMeta {
   name: DistrictName;
   center: { lat: number; lng: number };
   description: string;
+  slogan: string;
+  hotspots: string[];
   prompts: string[];
 }
 
-export type CategoryFilter = "전체" | "맛집" | "카페" | "학원" | "문화시설";
+export type CategoryFilter =
+  | "전체"
+  | "한식/노포"
+  | "고기/구이"
+  | "카페/베이커리"
+  | "양식/일식/분식";
 
-export type MobileTab = "chat" | "places" | "map";
+export type MainViewMode = "explore" | "map" | "chat";
+export type MobileTab = "places" | "map" | "chat";
 
 export type ApiProvider = "groq" | "kakao_rest" | "kakao_js";
 
