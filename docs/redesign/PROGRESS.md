@@ -25,5 +25,8 @@
 - `feature/dongbuk-table-redesign` 브랜치 생성 및 최신 저장소 상태 확인 완료.
 - 프론트엔드(`Next.js 16.2.12`, `React 19.2.4`, `Tailwind CSS 4.3.3`) 및 백엔드(`FastAPI`, `Groq`, `Kakao Maps SDK`) 라이브 동작 확인 (`HTTP 200`, `live_api`).
 - 데이터 감사에서 치명 결함 확인: 24/24건 `address`/`road_address` 필드 뒤바뀜, 24/24건 미검증 정적 평점·리뷰 수, 24/24건 이미지 0건, 프론트-백엔드 100% 중복, 초기 샘플 찜 목록 하드코딩.
+- 카카오 로컬 REST API 24건 전수 실존 교차 검증 완료: 14건 실존 확인(단, 이 중 4건 도로명주소 오류·4건 전화번호 불일치 식별), 1건 오매칭, 9건 미확인(`needs_verification` 격리 예정).
+- 기존 테스트(`test_mock_kakao_map_live.py`) 실측 실행: Mock Kakao 지도 캔버스 렌더링 PASS, `SettingsModal` 키 기등록 상태 placeholder 불일치로 Timeout FAIL 확인(기존 `v2_3` 아카이브 스크린샷 원복 보존).
 - 리디자인 전 기준(Baseline) 스크린샷 4종(`1440×900`, `768×1024`, `390×844`, `320×700`) 캡처 및 육안 시각 결함 진단 완료.
 - P0 필수 산출물 6종 작성 완료 → 사용자 승인 후 P1 착수 예정.
+

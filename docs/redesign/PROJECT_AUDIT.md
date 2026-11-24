@@ -21,10 +21,15 @@
 | AI / Map | Groq API (`llama-3.3-70b-versatile`), Kakao REST & Maps Web SDK v2 | 연결 정상 (`live_api`) | 로컬 `.env` / AES-256 `settings.json`에 키 등록 확인 |
 | QA / Test | Python Playwright (Chromium) | 정상 동작 | 4개 기준 해상도 캡처 완료 |
 
-### 라이브 실행 상태 점검 결과 (2026-11-24 실측)
+### 라이브 실행 및 기존 테스트 점검 결과 (2026-11-24 실측)
 - `GET http://127.0.0.1:8000/api/health`: **HTTP 200 OK** (`groq_status: connected`, `kakao_rest_status: connected`, `kakao_js_status: configured`, `total_curated_restaurants: 24`)
 - `GET http://127.0.0.1:3000/api/health`: **HTTP 200 OK** (`next.config.ts` rewrite 정상 동작)
 - `GET http://127.0.0.1:3000`: **HTTP 200 OK** (콘솔 에러 0건, Hydration 에러 0건, 실제 Kakao Maps 도로·마커 타일 정상 렌더링 확인)
+- **기존 QA 테스트 실행 결과 (`test_mock_kakao_map_live.py`)**:
+  - 1단계(Mock Kakao SDK 주입 및 `desktop_1440x900` 라이브 캔버스 렌더링): **PASS**
+  - 2단계(`SettingsModal` 카카오 JS 탭 입력창 `input[placeholder*='JavaScript Key']`): **FAIL (Timeout 30s)** — 실제 카카오 JS 키가 이미 등록된 환경에서는 placeholder가 `"새로운 JavaScript 키를 입력하여 변경..."`으로 바뀌어 테스트 셀렉터가 실패함.
+  - 기타 구 스크립트(`run_visual_qa_suite.py`, `run_kakao_map_qa_suite.py`): v2.2/v2.3 시절 셀렉터(`노원구에서 조용한 스터디 카페 추천해 줘` 등)에 종속되어 P6에서 신규 Playwright E2E/시각/지도 회귀 스위트로 재구축 필요.
+- **기존 UI 공통 컴포넌트 자산 확인**: `Modal.tsx`(포커스 트랩·Esc 닫기·복원 우수 → 라이트 테마 리디자인 후 보존), `providers.tsx`(SSR-safe `useRef` Redux 스토어 패턴 → 유지), `Button.tsx`·`Badge.tsx`·`Card.tsx`(다크 테마 하드코딩 → P1에서 전면 교체).
 
 ---
 
@@ -84,3 +89,4 @@
 | **다이닝코드** | 지역·카테고리·방문목적(혼밥/가족/주차) 직관적 탐색, 명확한 방문 핵심 정보 | 높은 정보 밀도·광고성 배너·과도한 그래프 |
 | **캐치테이블 / 식신** | 모바일 바텀시트 필터, 명확한 영업 상태 표시, 직관적인 지도-목록 연동 | 예약 슬롯/대기열(미제공 기능) 모방 금지 |
 | **카카오맵 / 네이버 지도** | 데스크톱 좌측 목록(35~40%) + 우측 지도(60~65%), 모바일 전체 지도 + 확장형 바텀시트 | 메인 홈에 지도를 강제 고정하는 구조 |
+
