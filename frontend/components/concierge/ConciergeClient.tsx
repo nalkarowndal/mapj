@@ -158,7 +158,7 @@ export const ConciergeClient: React.FC<ConciergeClientProps> = ({ regions }) => 
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="예: 성북동에서 부모님과 가기 좋은 조용한 한식집 추천해 줘"
                 aria-label="원하는 식사 상황이나 음식 입력"
-                className="w-full bg-transparent px-3 py-3.5 text-[15px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none"
+                className="w-full bg-transparent px-3 py-3.5 text-[15px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none focus:outline-none focus-visible:outline-none"
               />
             </div>
             <Button

@@ -385,7 +385,7 @@ export const MapExplorer: React.FC<MapExplorerProps> = ({
             onSubmit={handleSearchSubmit}
             className="flex items-center gap-2 flex-1 max-w-xl"
           >
-            <div className="relative flex-1 flex items-center bg-[var(--bg-main)] border border-[var(--border-strong)] rounded-[10px]">
+            <div className="relative flex-1 flex items-center bg-[var(--bg-main)] border border-[var(--border-strong)] rounded-[10px] focus-within:border-[var(--brand-primary)] focus-within:ring-2 focus-within:ring-[var(--brand-primary)]/15 transition-all">
               <Search className="w-4 h-4 text-[var(--text-muted)] ml-3 shrink-0" />
               <input
                 type="search"
@@ -393,7 +393,7 @@ export const MapExplorer: React.FC<MapExplorerProps> = ({
                 onChange={(e) => setQueryText(e.target.value)}
                 placeholder="지도에서 매장명, 메뉴, 동네 검색"
                 aria-label="지도 맛집 검색"
-                className="w-full bg-transparent px-2.5 py-2 text-[14px] text-[var(--text-primary)] focus:outline-none"
+                className="w-full bg-transparent px-2.5 py-2 text-[14px] text-[var(--text-primary)] outline-none focus:outline-none focus-visible:outline-none"
               />
             </div>
             <Button type="submit" variant="primary" size="sm">

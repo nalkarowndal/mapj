@@ -211,7 +211,7 @@ export const SearchExplorer: React.FC<SearchExplorerProps> = ({
               onChange={(e) => setSearchInput(e.target.value)}
               placeholder="음식점명, 대표메뉴, 동네·상권, 특징으로 검색 (예: 공릉동 국수, 성북동 빵)"
               aria-label="맛집 검색어 입력"
-              className="w-full bg-transparent px-3 py-2.5 min-h-[44px] text-[15px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none"
+              className="w-full bg-transparent px-3 py-2.5 min-h-[44px] text-[15px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none focus:outline-none focus-visible:outline-none"
             />
           </div>
 

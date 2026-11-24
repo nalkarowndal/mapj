@@ -57,7 +57,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             id={inputId}
             aria-invalid={Boolean(error)}
             aria-describedby={error || helperText ? messageId : undefined}
-            className={`w-full bg-transparent text-[15px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] py-2.5 min-h-[44px] focus:outline-none ${
+            className={`w-full bg-transparent text-[15px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] py-2.5 min-h-[44px] outline-none focus:outline-none focus-visible:outline-none ${
               leftIcon ? "pl-2.5" : "pl-3.5"
             } ${rightElement ? "pr-2" : "pr-3.5"} ${className}`}
             {...props}

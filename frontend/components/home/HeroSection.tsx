@@ -60,7 +60,7 @@ export const HeroSection: React.FC = () => {
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="지역명, 음식명, 매장명으로 검색해 보세요"
                   aria-label="지역명, 음식명, 매장명 검색"
-                  className="flex-1 min-w-0 bg-transparent px-3 py-2.5 text-[15px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none"
+                  className="flex-1 min-w-0 bg-transparent px-3 py-2.5 text-[15px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none focus:outline-none focus-visible:outline-none"
                 />
                 <Button type="submit" variant="primary" size="md" className="shrink-0">
                   검색
