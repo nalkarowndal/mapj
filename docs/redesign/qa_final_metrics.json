@@ -1,7 +1,7 @@
 {
   "base_url": "http://localhost:3005",
   "api_url": "http://127.0.0.1:8000",
-  "executed_at": "2026-11-24 14:43:34",
+  "executed_at": "2026-11-24 15:16:53",
   "suites": {
     "security_backend": {
       "pass": true,
@@ -21,49 +21,49 @@
       "pass": true,
       "metrics": {
         "/": {
-          "ttfb_ms": 140,
-          "dcl_ms": 436,
-          "load_ms": 539,
-          "fcp_ms": 428,
-          "lcp_ms": 428,
-          "cls": 0.0014,
-          "wall_ms": 1256
+          "ttfb_ms": 159,
+          "dcl_ms": 245,
+          "load_ms": 779,
+          "fcp_ms": 636,
+          "lcp_ms": 636,
+          "cls": 0.0013,
+          "wall_ms": 1499
         },
         "/regions/seongbuk": {
-          "ttfb_ms": 48,
-          "dcl_ms": 369,
-          "load_ms": 532,
-          "fcp_ms": 360,
-          "lcp_ms": 360,
-          "cls": 0.0009,
-          "wall_ms": 1238
+          "ttfb_ms": 57,
+          "dcl_ms": 382,
+          "load_ms": 580,
+          "fcp_ms": 396,
+          "lcp_ms": 396,
+          "cls": 0.0006,
+          "wall_ms": 1298
         },
         "/restaurants": {
-          "ttfb_ms": 61,
-          "dcl_ms": 325,
-          "load_ms": 463,
-          "fcp_ms": 316,
-          "lcp_ms": 328,
-          "cls": 0.0039,
-          "wall_ms": 1171
+          "ttfb_ms": 72,
+          "dcl_ms": 321,
+          "load_ms": 491,
+          "fcp_ms": 320,
+          "lcp_ms": 340,
+          "cls": 0.004,
+          "wall_ms": 1197
         },
         "/restaurants/teolbo-godeuni-nowon": {
-          "ttfb_ms": 27,
-          "dcl_ms": 272,
-          "load_ms": 370,
-          "fcp_ms": 276,
-          "lcp_ms": 276,
-          "cls": 0.001,
-          "wall_ms": 1083
+          "ttfb_ms": 31,
+          "dcl_ms": 285,
+          "load_ms": 396,
+          "fcp_ms": 288,
+          "lcp_ms": 288,
+          "cls": 0.0012,
+          "wall_ms": 1109
         },
         "/concierge": {
           "ttfb_ms": 22,
-          "dcl_ms": 216,
-          "load_ms": 279,
-          "fcp_ms": 220,
-          "lcp_ms": 220,
-          "cls": 0.096,
-          "wall_ms": 990
+          "dcl_ms": 104,
+          "load_ms": 295,
+          "fcp_ms": 232,
+          "lcp_ms": 232,
+          "cls": 0.0885,
+          "wall_ms": 1005
         }
       }
     },

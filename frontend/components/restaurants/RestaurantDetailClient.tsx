@@ -210,7 +210,14 @@ export const RestaurantDetailClient: React.FC<RestaurantDetailClientProps> = ({
                 className="object-cover"
               />
             </div>
-            {!restaurant.primary_image && (
+            {restaurant.primary_image ? (
+              <p className="text-[12px] text-[var(--text-muted)]">
+                사진 출처: {restaurant.primary_image.source_name || "동북미식 등록 사진"}
+                {restaurant.primary_image.license_type
+                  ? ` · ${restaurant.primary_image.license_type.split("(")[0].trim()}`
+                  : ""}
+              </p>
+            ) : (
               <p className="text-[13px] text-[var(--text-muted)]">
                 저작권 및 이용 권한이 확인된 실제 매장 사진이 확보되지 않아 공통 플레이스홀더를 표시합니다.
               </p>

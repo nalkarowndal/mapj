@@ -1,0 +1,37 @@
+{
+  "nowon": {
+    "hero_image_url": "/images/regions/region-nowon.jpg",
+    "hero_image_credit": "nowon 실제 동네 풍경 사진 (출처: 티스토리)",
+    "source_url": "https://sangho443.tistory.com/1653",
+    "width": 740,
+    "height": 493
+  },
+  "dobong": {
+    "hero_image_url": "/images/regions/region-dobong.jpg",
+    "hero_image_credit": "도봉구 도봉산 실제 풍경 사진 (출처: 네이버블로그)",
+    "source_url": "http://blog.naver.com/naava_kr/222910087265",
+    "width": 966,
+    "height": 725
+  },
+  "gangbuk": {
+    "hero_image_url": "/images/regions/region-gangbuk.jpg",
+    "hero_image_credit": "gangbuk 실제 동네 풍경 사진 (출처: 네이버블로그)",
+    "source_url": "https://blog.naver.com/h_jiniramp/224475619516",
+    "width": 1280,
+    "height": 961
+  },
+  "jungnang": {
+    "hero_image_url": "/images/regions/region-jungnang.jpg",
+    "hero_image_credit": "중랑구 중랑천 실제 풍경 사진 (출처: 티스토리)",
+    "source_url": "https://mehoo.tistory.com/268",
+    "width": 1400,
+    "height": 933
+  },
+  "seongbuk": {
+    "hero_image_url": "/images/regions/region-seongbuk.jpg",
+    "hero_image_credit": "seongbuk 실제 동네 풍경 사진 (출처: 트레벌데일리)",
+    "source_url": "https://www.traveldaily.co.kr/news/articleView.html?idxno=70840",
+    "width": 1280,
+    "height": 853
+  }
+}

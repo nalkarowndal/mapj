@@ -32,12 +32,15 @@ from db.models import (
     Restaurant,
     RestaurantCategory,
     RestaurantFeature,
+    RestaurantImage,
     VerificationLog,
 )
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 PRIMARY_SEED_FILE = BASE_DIR / "seed_data" / "verified_restaurants.json"
 EXPANDED_SEED_FILE = BASE_DIR / "seed_data" / "kakao_expanded_restaurants.json"
+REGION_IMG_MANIFEST = BASE_DIR / "seed_data" / "region_images_manifest.json"
+REST_IMG_MANIFEST = BASE_DIR / "seed_data" / "restaurant_images_manifest.json"
 LEGACY_FEEDBACK_FILE = BASE_DIR / "data" / "feedback_reports.json"
 
 STANDARD_CATEGORIES: List[Dict[str, Any]] = [
@@ -542,7 +545,47 @@ def seed_database(db: Session) -> Dict[str, Any]:
                         )
                     )
 
-    # 8. Migrate any legacy feedback_reports.json rows into DB
+    # 8. Sync verified real neighborhood & restaurant image manifests if present
+    if REGION_IMG_MANIFEST.exists():
+        try:
+            reg_imgs = json.loads(REGION_IMG_MANIFEST.read_text(encoding="utf-8"))
+            for slug, info in reg_imgs.items():
+                reg_row = db.get(Region, slug)
+                if reg_row and info.get("hero_image_url"):
+                    reg_row.hero_image_url = info["hero_image_url"]
+                    reg_row.hero_image_credit = info.get("hero_image_credit", reg_row.hero_image_credit)
+        except Exception:
+            pass
+
+    if REST_IMG_MANIFEST.exists():
+        try:
+            rest_imgs = json.loads(REST_IMG_MANIFEST.read_text(encoding="utf-8"))
+            for item in rest_imgs:
+                rid = item.get("restaurant_id")
+                if not rid or not db.get(Restaurant, rid):
+                    continue
+                img_id = f"img-real-{rid}"
+                if not db.get(RestaurantImage, img_id):
+                    db.add(
+                        RestaurantImage(
+                            id=img_id,
+                            restaurant_id=rid,
+                            url=item["url"],
+                            image_type=item.get("image_type", "food"),
+                            alt_text=item.get("alt_text") or f"{rid} 실제 매장 사진",
+                            is_primary=True,
+                            source_name=item.get("source_name") or "카카오 이미지 검색",
+                            author=item.get("author"),
+                            license_type=item.get("license_type") or "외부 출처 참고 이미지",
+                            verified_at=item.get("verified_at", "2026-11-24"),
+                            is_ai_generated=bool(item.get("is_ai_generated", False)),
+                            display_order=1,
+                        )
+                    )
+        except Exception:
+            pass
+
+    # 9. Migrate any legacy feedback_reports.json rows into DB
     if LEGACY_FEEDBACK_FILE.exists():
         try:
             legacy_fbs = json.loads(LEGACY_FEEDBACK_FILE.read_text(encoding="utf-8"))
