@@ -8,6 +8,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 export interface SliderImage {
   url: string;
   alt: string;
+  badge?: string | null;
   caption?: string | null;
   credit?: string | null;
 }
@@ -192,12 +193,21 @@ export const ImageSlider: React.FC<ImageSliderProps> = ({
           <div className="absolute top-3 right-3 z-20">{topRightOverlay}</div>
         )}
 
-        {/* Counter Pill */}
-        {showCounter && total > 1 && (
-          <div className="absolute top-3 left-3 z-10 px-2.5 py-1 rounded-full bg-[#1C241F]/75 text-white text-[12px] font-medium backdrop-blur-xs pointer-events-none">
-            {index + 1} / {total}
+        {/* Counter & Type Badge Pill */}
+        {(showCounter && total > 1) || activeSlide.badge ? (
+          <div className="absolute top-3 left-3 z-10 flex items-center gap-1.5 pointer-events-none">
+            {showCounter && total > 1 && (
+              <span className="px-2.5 py-1 rounded-full bg-[#1C241F]/78 text-white text-[12px] font-medium backdrop-blur-xs">
+                {index + 1} / {total}
+              </span>
+            )}
+            {activeSlide.badge && (
+              <span className="px-2.5 py-1 rounded-full bg-white/90 text-[var(--text-primary)] text-[12px] font-semibold shadow-xs">
+                {activeSlide.badge}
+              </span>
+            )}
           </div>
-        )}
+        ) : null}
 
         {/* Prev / Next Controls */}
         {total > 1 && (

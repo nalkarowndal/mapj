@@ -764,14 +764,22 @@ async def admin_upload_image(
             detail="이미지 파일 크기는 5MB 이하여야 합니다.",
         )
 
-    # Validate actual image bytes via Pillow (blocks fake/script uploads)
+    # Validate actual image bytes & HD resolution via Pillow (blocks fake/script & blurry low-res uploads)
     try:
         with Image.open(io.BytesIO(raw_bytes)) as img:
             img.verify()
         with Image.open(io.BytesIO(raw_bytes)) as img2:
             if img2.format not in ALLOWED_PIL_FORMATS:
                 raise ValueError("Unsupported image format")
+            w, h = img2.size
+            if w < 600 or h < 400:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"화질 기준 미달입니다 ({w}x{h}px). 깨짐 방지를 위해 최소 600×400px 이상의 선명한 사진을 업로드해 주세요.",
+                )
             save_ext = ".jpg" if img2.format == "JPEG" else ".png" if img2.format == "PNG" else ".webp"
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

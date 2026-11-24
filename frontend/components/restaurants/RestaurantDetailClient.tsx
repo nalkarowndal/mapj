@@ -141,11 +141,19 @@ export const RestaurantDetailClient: React.FC<RestaurantDetailClientProps> = ({
     restaurant.kakao_url ||
     `https://map.kakao.com/link/to/${encodeURIComponent(restaurant.name)},${restaurant.lat},${restaurant.lng}`;
 
+  const IMAGE_TYPE_BADGE: Record<string, string> = {
+    food: "음식 사진",
+    interior: "매장 내부",
+    exterior: "매장 외관",
+    menu: "메뉴",
+  };
+
   const gallerySlides: SliderImage[] =
     restaurant.images && restaurant.images.length > 0
       ? restaurant.images.map((img, i) => ({
           url: img.url,
           alt: img.alt || `${restaurant.name} 사진 ${i + 1}`,
+          badge: IMAGE_TYPE_BADGE[img.image_type] || "매장 사진",
           credit: `사진 출처: ${img.source_name || "동북미식 등록 사진"}${
             img.license_type
               ? ` · ${img.license_type.split("(")[0].trim()}`
