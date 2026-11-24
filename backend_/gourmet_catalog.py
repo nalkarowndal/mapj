@@ -87,6 +87,15 @@ def serialize_restaurant(r: Restaurant, include_detail: bool = False) -> Dict[st
     )
 
     sig_menus = [m.name for m in r.menus if m.is_signature] or [m.name for m in r.menus[:3]]
+    top_menus = [
+        {
+            "name": m.name,
+            "price": m.price,
+            "price_label": m.price_label,
+            "is_signature": m.is_signature,
+        }
+        for m in sorted(r.menus, key=lambda x: (not x.is_signature, x.price is None, x.display_order))[:3]
+    ]
 
     base: Dict[str, Any] = {
         "id": r.id,
@@ -115,6 +124,7 @@ def serialize_restaurant(r: Restaurant, include_detail: bool = False) -> Dict[st
         "highlights": (r.highlights_json or [])[:2],
         "features": confirmed_features,
         "signature_menus": sig_menus,
+        "top_menus": top_menus,
         "primary_image": primary_image,
         "images": [
             {

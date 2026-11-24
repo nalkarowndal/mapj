@@ -42,6 +42,7 @@ export const RestaurantDetailClient: React.FC<RestaurantDetailClientProps> = ({
   const { isSaved, toggle, hydrated } = useBookmarks();
   const saved = hydrated ? isSaved(restaurant.id) : false;
   const [copiedAddress, setCopiedAddress] = useState(false);
+  const [showAllMenus, setShowAllMenus] = useState(false);
   const [mapState, setMapState] = useState<"loading" | "ready" | "unavailable">(
     "loading"
   );
@@ -262,49 +263,90 @@ export const RestaurantDetailClient: React.FC<RestaurantDetailClientProps> = ({
             )}
           </section>
 
-          {/* Registered Menus */}
+          {/* Registered Menu Price Table */}
           <section
             aria-labelledby="menus-heading"
             className="space-y-4 pt-2 border-t border-[var(--border-default)]"
           >
-            <div className="flex items-center justify-between gap-2">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <h2
                 id="menus-heading"
                 className="font-editorial text-[24px] font-semibold text-[var(--text-primary)] flex items-center gap-2"
               >
                 <UtensilsCrossed className="w-5 h-5 text-[var(--brand-accent-text)]" />
-                <span>대표 메뉴 및 가격대</span>
+                <span>메뉴 및 가격표</span>
+                {restaurant.menus.length > 0 && (
+                  <span className="text-[13px] font-sans font-medium text-[var(--text-muted)]">
+                    ({restaurant.menus.length}개)
+                  </span>
+                )}
               </h2>
               {restaurant.price_range_label && (
-                <span className="text-[14px] font-semibold text-[var(--brand-primary)]">
-                  평균 {restaurant.price_range_label}
+                <span className="px-3 py-1 rounded-full bg-[var(--bg-subtle)] text-[13px] font-semibold text-[var(--brand-primary)]">
+                  주요 가격대 {restaurant.price_range_label}
                 </span>
               )}
             </div>
 
             {restaurant.menus.length > 0 ? (
-              <ul className="divide-y divide-[var(--border-default)] rounded-[14px] bg-[var(--bg-surface)] border border-[var(--border-default)] px-5">
-                {restaurant.menus.map((m, idx) => (
-                  <li
-                    key={`${m.name}-${idx}`}
-                    className="py-4 flex items-center justify-between gap-4"
-                  >
-                    <div className="flex items-center gap-2">
-                      {m.is_signature && (
-                        <Badge variant="accent" size="sm">
-                          대표
-                        </Badge>
-                      )}
-                      <span className="text-[15px] font-medium text-[var(--text-primary)]">
-                        {m.name}
+              <div className="rounded-[14px] bg-[var(--bg-surface)] border border-[var(--border-default)] overflow-hidden">
+                <div className="px-5 py-2.5 bg-[var(--bg-subtle)]/65 border-b border-[var(--border-default)] flex items-center justify-between text-[12px] font-semibold text-[var(--text-secondary)]">
+                  <span>메뉴명</span>
+                  <span>가격 (원)</span>
+                </div>
+                <ul className="divide-y divide-[var(--border-default)] px-5">
+                  {(showAllMenus
+                    ? restaurant.menus
+                    : restaurant.menus.slice(0, 6)
+                  ).map((m, idx) => (
+                    <li
+                      key={`${m.name}-${idx}`}
+                      className="py-4 flex items-start justify-between gap-4"
+                    >
+                      <div className="space-y-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-2">
+                          {m.is_signature && (
+                            <Badge variant="accent" size="sm">
+                              대표
+                            </Badge>
+                          )}
+                          <span className="text-[15px] font-semibold text-[var(--text-primary)]">
+                            {m.name}
+                          </span>
+                        </div>
+                        {m.description && (
+                          <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed">
+                            {m.description}
+                          </p>
+                        )}
+                      </div>
+                      <span className="text-[15px] font-bold tabular-nums text-[var(--brand-primary)] shrink-0 pt-0.5">
+                        {m.price
+                          ? `${m.price.toLocaleString()}원`
+                          : m.price_label || "현장 확인"}
                       </span>
-                    </div>
-                    <span className="text-[14px] text-[var(--text-secondary)] shrink-0">
-                      {m.price ? `${m.price.toLocaleString()}원` : m.price_label || "현장 확인"}
-                    </span>
-                  </li>
-                ))}
-              </ul>
+                    </li>
+                  ))}
+                </ul>
+
+                {restaurant.menus.length > 6 && (
+                  <div className="px-5 py-3 border-t border-[var(--border-default)] bg-[var(--bg-main)]/50 text-center">
+                    <button
+                      type="button"
+                      onClick={() => setShowAllMenus((prev) => !prev)}
+                      className="text-[13.5px] font-semibold text-[var(--brand-primary)] hover:text-[var(--brand-accent-text)] transition-colors cursor-pointer"
+                    >
+                      {showAllMenus
+                        ? "메뉴 가격표 접기"
+                        : `전체 메뉴 가격표 더보기 (+${restaurant.menus.length - 6}개)`}
+                    </button>
+                  </div>
+                )}
+
+                <div className="px-5 py-2.5 border-t border-[var(--border-default)] bg-[var(--bg-subtle)]/35 text-[12px] text-[var(--text-muted)]">
+                  표기된 가격은 카카오맵 등록 공식 메뉴 기준이며, 매장 현장 사정에 따라 변동될 수 있습니다.
+                </div>
+              </div>
             ) : (
               <p className="text-[14px] text-[var(--text-secondary)]">
                 등록된 상세 메뉴가 없습니다. 방문 전 매장 또는 카카오맵을 통해 확인해 주세요.
@@ -534,6 +576,7 @@ export const RestaurantDetailClient: React.FC<RestaurantDetailClientProps> = ({
                   priceRange: rel.price_range_label,
                   imageUrl: rel.primary_image?.url || null,
                   images: rel.images,
+                  topMenus: rel.top_menus,
                   highlights: rel.highlights,
                 }}
                 isSaved={hydrated ? isSaved(rel.id) : false}

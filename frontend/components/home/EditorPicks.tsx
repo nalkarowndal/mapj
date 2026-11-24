@@ -60,6 +60,7 @@ export const EditorPicks: React.FC<EditorPicksProps> = ({ restaurants }) => {
                 imageUrl: r.primary_image?.url || null,
                 imageAlt: r.primary_image?.alt,
                 images: r.images,
+                topMenus: r.top_menus,
                 highlights: r.highlights,
               }}
               isSaved={hydrated ? isSaved(r.id) : false}

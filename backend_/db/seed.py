@@ -41,6 +41,7 @@ PRIMARY_SEED_FILE = BASE_DIR / "seed_data" / "verified_restaurants.json"
 EXPANDED_SEED_FILE = BASE_DIR / "seed_data" / "kakao_expanded_restaurants.json"
 REGION_IMG_MANIFEST = BASE_DIR / "seed_data" / "region_images_manifest.json"
 REST_IMG_MANIFEST = BASE_DIR / "seed_data" / "restaurant_images_manifest.json"
+REST_MENU_MANIFEST = BASE_DIR / "seed_data" / "restaurant_menus_manifest.json"
 LEGACY_FEEDBACK_FILE = BASE_DIR / "data" / "feedback_reports.json"
 
 STANDARD_CATEGORIES: List[Dict[str, Any]] = [
@@ -586,7 +587,46 @@ def seed_database(db: Session) -> Dict[str, Any]:
         except Exception:
             pass
 
-    # 9. Migrate any legacy feedback_reports.json rows into DB
+    # 9. Sync verified real menu price tables if manifest present
+    if REST_MENU_MANIFEST.exists():
+        try:
+            menu_entries = json.loads(REST_MENU_MANIFEST.read_text(encoding="utf-8"))
+            for entry in menu_entries:
+                rid = entry.get("restaurant_id")
+                r_row = db.get(Restaurant, rid) if rid else None
+                if not r_row:
+                    continue
+                existing_priced = db.execute(
+                    select(Menu).where(Menu.restaurant_id == rid, Menu.price.is_not(None))
+                ).scalars().first()
+                if not existing_priced and entry.get("menus"):
+                    old_ms = list(db.execute(select(Menu).where(Menu.restaurant_id == rid)).scalars().all())
+                    for om in old_ms:
+                        db.delete(om)
+                    db.flush()
+                    for m in entry["menus"]:
+                        db.add(
+                            Menu(
+                                id=f"menu-{rid}-{m['display_order']}",
+                                restaurant_id=rid,
+                                name=m["name"],
+                                price=m.get("price"),
+                                price_label=m.get("price_label") or "변동 (매장 문의)",
+                                is_signature=bool(m.get("is_signature")),
+                                description=m.get("description"),
+                                display_order=int(m.get("display_order", 1)),
+                            )
+                        )
+                    if entry.get("price_min") is not None:
+                        r_row.price_min = entry["price_min"]
+                    if entry.get("price_max") is not None:
+                        r_row.price_max = entry["price_max"]
+                    if entry.get("price_range_label"):
+                        r_row.price_range_label = entry["price_range_label"]
+        except Exception:
+            pass
+
+    # 10. Migrate any legacy feedback_reports.json rows into DB
     if LEGACY_FEEDBACK_FILE.exists():
         try:
             legacy_fbs = json.loads(LEGACY_FEEDBACK_FILE.read_text(encoding="utf-8"))

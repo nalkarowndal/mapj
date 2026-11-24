@@ -77,6 +77,7 @@ export interface RestaurantSummary {
   highlights: string[];
   features: string[];
   signature_menus: string[];
+  top_menus?: RestaurantMenuItem[];
   primary_image?: RestaurantImageItem | null;
   images?: RestaurantImageItem[];
   open_status: "open" | "closed" | "break" | "needs_check";

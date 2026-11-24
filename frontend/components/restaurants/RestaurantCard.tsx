@@ -16,6 +16,7 @@ export interface RestaurantCardData {
   imageUrl?: string | null;
   imageAlt?: string;
   images?: { url: string; alt?: string }[];
+  topMenus?: { name: string; price?: number | null; price_label?: string | null }[];
   highlights?: string[]; // 검증된 핵심 특징 최대 2개
 }
 
@@ -111,7 +112,29 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
           {restaurant.oneLineIntro}
         </p>
 
-        <div className="mt-4 pt-3 border-t border-[var(--border-default)] flex flex-wrap items-center justify-between gap-2 text-[13px]">
+        {/* Mini Menu Price Preview (Top 2 priced signature dishes) */}
+        {restaurant.topMenus && restaurant.topMenus.some((m) => m.price) && (
+          <div className="mt-3 rounded-[10px] bg-[var(--bg-main)] border border-[var(--border-default)]/80 px-3 py-2 space-y-1">
+            {restaurant.topMenus
+              .filter((m) => m.price)
+              .slice(0, 2)
+              .map((m, idx) => (
+                <div
+                  key={`${m.name}-${idx}`}
+                  className="flex items-center justify-between gap-2 text-[12.5px]"
+                >
+                  <span className="text-[var(--text-secondary)] truncate">
+                    {m.name}
+                  </span>
+                  <span className="font-semibold tabular-nums text-[var(--brand-primary)] shrink-0">
+                    {m.price ? `${m.price.toLocaleString()}원` : m.price_label}
+                  </span>
+                </div>
+              ))}
+          </div>
+        )}
+
+        <div className="mt-3.5 pt-3 border-t border-[var(--border-default)] flex flex-wrap items-center justify-between gap-2 text-[13px]">
           <span className="font-medium text-[var(--text-primary)] whitespace-nowrap">
             {restaurant.priceRange || "가격 정보 확인 필요"}
           </span>

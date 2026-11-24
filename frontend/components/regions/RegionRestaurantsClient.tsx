@@ -39,6 +39,7 @@ export const RegionRestaurantsClient: React.FC<RegionRestaurantsClientProps> = (
     imageUrl: r.primary_image?.url || null,
     imageAlt: r.primary_image?.alt,
     images: r.images,
+    topMenus: r.top_menus,
     highlights: r.highlights,
   });
 
