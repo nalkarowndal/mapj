@@ -38,6 +38,7 @@ export const RegionRestaurantsClient: React.FC<RegionRestaurantsClientProps> = (
     priceRange: r.price_range_label,
     imageUrl: r.primary_image?.url || null,
     imageAlt: r.primary_image?.alt,
+    images: r.images,
     highlights: r.highlights,
   });
 

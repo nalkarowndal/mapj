@@ -1,12 +1,40 @@
 "use client";
 import React, { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Search } from "lucide-react";
 import { Button } from "../ui/Button";
+import { ImageSlider, SliderImage } from "../ui/ImageSlider";
 
 const QUICK_SEARCH_TERMS = ["공릉동 국수", "성북동 베이커리", "도봉산 노포", "4.19 카페거리"];
+
+const HERO_SLIDES: SliderImage[] = [
+  {
+    url: "/images/regions/region-seongbuk.jpg",
+    alt: "성북구 성북동 전통 한옥 거리 풍경",
+    credit: "성북구 성북동 실제 거리 풍경 · 좌우로 슬라이드해 동북권 5개 동네를 둘러보세요",
+  },
+  {
+    url: "/images/restaurants/gb-01.jpg",
+    alt: "강북구 엘림들깨수제비칼국수 실제 한 상",
+    credit: "강북구 엘림들깨수제비칼국수 실제 음식 사진",
+  },
+  {
+    url: "/images/regions/region-dobong.jpg",
+    alt: "도봉구 도봉산 실제 봉우리 풍경",
+    credit: "도봉구 도봉산 실제 풍경 사진",
+  },
+  {
+    url: "/images/restaurants/nw-01.jpg",
+    alt: "노원구 털보고된이 본점 실제 화덕 고등어구이",
+    credit: "노원구 털보고된이 본점 실제 화덕 생선구이 사진",
+  },
+  {
+    url: "/images/regions/region-jungnang.jpg",
+    alt: "중랑구 중랑천 수변 산책로 실제 풍경",
+    credit: "중랑구 중랑천 수변 산책로 실제 풍경 사진",
+  },
+];
 
 export const HeroSection: React.FC = () => {
   const router = useRouter();
@@ -94,23 +122,18 @@ export const HeroSection: React.FC = () => {
             </div>
           </div>
 
-          {/* Right: Editorial Food Photography */}
+          {/* Right: Multi-Image Real Neighborhood & Dining Slider */}
           <div className="lg:col-span-6">
-            <figure className="space-y-2">
-              <div className="relative aspect-[4/3] w-full rounded-[16px] overflow-hidden bg-[var(--bg-subtle)] border border-[var(--border-default)]">
-                <Image
-                  src="/images/editorial/hero-table.jpg"
-                  alt="따뜻한 아침 햇살 아래 차려진 한국 로컬 식당의 정갈한 한식 상차림"
-                  fill
-                  priority
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                  className="object-cover"
-                />
-              </div>
-              <figcaption className="text-[12px] text-[var(--text-muted)] text-right">
-                동북미식 브랜드 에디토리얼 배너 (AI 생성 · 일반 미식 분위기 연출 이미지)
-              </figcaption>
-            </figure>
+            <ImageSlider
+              slides={HERO_SLIDES}
+              aspectClassName="aspect-[4/3]"
+              roundedClassName="rounded-[16px] border border-[var(--border-default)]"
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              priority
+              showCounter
+              showCaption
+              autoPlayMs={5500}
+            />
           </div>
         </div>
       </div>

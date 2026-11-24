@@ -7,6 +7,12 @@ export interface NeighborhoodItem {
   keywords: string[];
 }
 
+export interface RegionGalleryImage {
+  url: string;
+  alt: string;
+  credit?: string;
+}
+
 export interface RegionSummary {
   slug: RegionSlug;
   name: string;
@@ -17,6 +23,7 @@ export interface RegionSummary {
   editorial_story: string;
   hero_image_url: string;
   hero_image_credit: string;
+  gallery_images?: RegionGalleryImage[];
   center_lat: number;
   center_lng: number;
   restaurant_count: number;
@@ -71,6 +78,7 @@ export interface RestaurantSummary {
   features: string[];
   signature_menus: string[];
   primary_image?: RestaurantImageItem | null;
+  images?: RestaurantImageItem[];
   open_status: "open" | "closed" | "break" | "needs_check";
   verification_status: "verified" | "needs_verification" | "reference";
   verified_at?: string | null;

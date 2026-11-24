@@ -7,10 +7,14 @@
 
 from __future__ import annotations
 
+import json
 import math
 import re
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 from typing import Any, Dict, List, Optional
+
+REGION_IMG_MANIFEST = Path(__file__).resolve().parent / "seed_data" / "region_images_manifest.json"
 
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
@@ -112,6 +116,21 @@ def serialize_restaurant(r: Restaurant, include_detail: bool = False) -> Dict[st
         "features": confirmed_features,
         "signature_menus": sig_menus,
         "primary_image": primary_image,
+        "images": [
+            {
+                "id": img.id,
+                "url": img.url,
+                "alt": img.alt_text,
+                "image_type": img.image_type,
+                "is_primary": img.is_primary,
+                "source_name": img.source_name,
+                "author": img.author,
+                "license_type": img.license_type,
+                "verified_at": img.verified_at,
+                "is_ai_generated": img.is_ai_generated,
+            }
+            for img in sorted_images
+        ],
         "open_status": _compute_kst_open_status(r.opening_hours),
         "opening_hours_note": r.opening_hours_note
         or "매장 사정에 따라 변동될 수 있으므로 방문 전 전화 또는 카카오맵에서 최신 영업시간을 확인해 주세요.",
@@ -209,8 +228,25 @@ def get_all_regions() -> List[Dict[str, Any]]:
         for r in pub_rows:
             counts[r.region_id] = counts.get(r.region_id, 0) + 1
 
+        region_galleries: Dict[str, List[Dict[str, Any]]] = {}
+        if REGION_IMG_MANIFEST.exists():
+            try:
+                raw_m = json.loads(REGION_IMG_MANIFEST.read_text(encoding="utf-8"))
+                for slug_k, info in raw_m.items():
+                    if isinstance(info, dict) and info.get("gallery"):
+                        region_galleries[slug_k] = info["gallery"]
+            except Exception:
+                pass
+
         result = []
         for reg in regions:
+            gallery = region_galleries.get(reg.slug) or [
+                {
+                    "url": reg.hero_image_url,
+                    "alt": f"{reg.name} 실제 동네 풍경",
+                    "credit": reg.hero_image_credit,
+                }
+            ]
             result.append({
                 "slug": reg.slug,
                 "name": reg.name,
@@ -221,6 +257,7 @@ def get_all_regions() -> List[Dict[str, Any]]:
                 "editorial_story": reg.editorial_story,
                 "hero_image_url": reg.hero_image_url,
                 "hero_image_credit": reg.hero_image_credit,
+                "gallery_images": gallery,
                 "center_lat": reg.center_lat,
                 "center_lng": reg.center_lng,
                 "restaurant_count": counts.get(reg.id, 0),

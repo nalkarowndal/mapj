@@ -1,8 +1,8 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { Bookmark, MapPin } from "lucide-react";
+import { ImageSlider, SliderImage } from "../ui/ImageSlider";
 
 export interface RestaurantCardData {
   id: string;
@@ -15,6 +15,7 @@ export interface RestaurantCardData {
   priceRange?: string | null;
   imageUrl?: string | null;
   imageAlt?: string;
+  images?: { url: string; alt?: string }[];
   highlights?: string[]; // 검증된 핵심 특징 최대 2개
 }
 
@@ -31,60 +32,55 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
   onToggleSave,
   priority = false,
 }) => {
-  const [imgError, setImgError] = useState(false);
-  const src =
-    !imgError && restaurant.imageUrl
-      ? restaurant.imageUrl
-      : "/images/placeholder-table.svg";
-  const isPlaceholder = !restaurant.imageUrl || imgError;
   const visibleHighlights = (restaurant.highlights || []).slice(0, 2);
+
+  const slides: SliderImage[] =
+    restaurant.images && restaurant.images.length > 0
+      ? restaurant.images.map((img, i) => ({
+          url: img.url,
+          alt: img.alt || `${restaurant.name} 사진 ${i + 1}`,
+        }))
+      : [
+          {
+            url: restaurant.imageUrl || "/images/placeholder-table.svg",
+            alt: restaurant.imageAlt || `${restaurant.name} 대표 이미지`,
+          },
+        ];
+
+  const bookmarkButton = onToggleSave ? (
+    <button
+      type="button"
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onToggleSave(restaurant.id);
+      }}
+      aria-pressed={isSaved}
+      aria-label={isSaved ? `${restaurant.name} 저장 해제` : `${restaurant.name} 저장`}
+      className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors cursor-pointer border ${
+        isSaved
+          ? "bg-[var(--brand-primary)] text-white border-[var(--brand-primary)]"
+          : "bg-[var(--bg-surface)]/92 text-[var(--text-primary)] border-[var(--border-default)] hover:bg-[var(--bg-surface)]"
+      }`}
+    >
+      <Bookmark className="w-4 h-4" fill={isSaved ? "currentColor" : "none"} />
+    </button>
+  ) : undefined;
 
   return (
     <article className="group relative flex flex-col bg-[var(--bg-surface)] rounded-[14px] border border-[var(--border-default)] overflow-hidden transition-colors hover:border-[var(--border-strong)]">
-      {/* 4:3 Image Container */}
-      <div className="relative aspect-[4/3] w-full bg-[var(--bg-subtle)] overflow-hidden">
-        <Link
-          href={`/restaurants/${restaurant.slug}`}
-          className="relative block w-full h-full focus-visible:outline-2 focus-visible:outline-inset focus-visible:outline-[var(--brand-accent)]"
-          aria-label={`${restaurant.name} 상세 정보 보기`}
-        >
-          <Image
-            src={src}
-            alt={restaurant.imageAlt || `${restaurant.name} 대표 이미지`}
-            fill
-            priority={priority}
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            onError={() => setImgError(true)}
-            className={`object-cover transition-transform duration-300 ${
-              isPlaceholder ? "" : "group-hover:scale-[1.03]"
-            }`}
-          />
-        </Link>
-
-        {/* Bookmark Save Button */}
-        {onToggleSave && (
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onToggleSave(restaurant.id);
-            }}
-            aria-pressed={isSaved}
-            aria-label={isSaved ? `${restaurant.name} 저장 해제` : `${restaurant.name} 저장`}
-            className={`absolute top-3 right-3 w-10 h-10 rounded-full flex items-center justify-center transition-colors cursor-pointer border ${
-              isSaved
-                ? "bg-[var(--brand-primary)] text-white border-[var(--brand-primary)]"
-                : "bg-[var(--bg-surface)]/92 text-[var(--text-primary)] border-[var(--border-default)] hover:bg-[var(--bg-surface)]"
-            }`}
-          >
-            <Bookmark
-              className="w-4 h-4"
-              fill={isSaved ? "currentColor" : "none"}
-            />
-          </button>
-        )}
-      </div>
+      {/* 4:3 Multi-Image Slider Container */}
+      <ImageSlider
+        slides={slides}
+        aspectClassName="aspect-[4/3]"
+        roundedClassName="rounded-none"
+        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+        priority={priority}
+        compact
+        href={`/restaurants/${restaurant.slug}`}
+        linkAriaLabel={`${restaurant.name} 상세 정보 보기`}
+        topRightOverlay={bookmarkButton}
+      />
 
       {/* Clean Editorial Card Body (Max 2 verified highlights, no unverified ratings) */}
       <div className="flex-1 flex flex-col p-4 sm:p-5">
@@ -137,4 +133,3 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
     </article>
   );
 };
-

@@ -4,34 +4,134 @@
     "hero_image_credit": "nowon 실제 동네 풍경 사진 (출처: 티스토리)",
     "source_url": "https://sangho443.tistory.com/1653",
     "width": 740,
-    "height": 493
+    "height": 493,
+    "gallery": [
+      {
+        "url": "/images/regions/region-nowon.jpg",
+        "alt": "nowon 대표 동네 풍경 1",
+        "credit": "nowon 실제 동네 풍경 사진 (출처: 티스토리)",
+        "source_url": "https://sangho443.tistory.com/1653"
+      },
+      {
+        "url": "/images/regions/region-nowon-2.jpg",
+        "alt": "공릉동 경춘선숲길 산책로",
+        "credit": "공릉동 경춘선숲길 산책로 실제 사진 (출처: 헤럴드경제)",
+        "source_url": "https://v.daum.net/v/20150811111404924"
+      },
+      {
+        "url": "/images/regions/region-nowon-3.jpg",
+        "alt": "노원구 불암산 풍경",
+        "credit": "노원구 불암산 풍경 실제 사진 (출처: 서울신문)",
+        "source_url": "https://v.daum.net/v/20180918033622030"
+      }
+    ]
   },
   "dobong": {
     "hero_image_url": "/images/regions/region-dobong.jpg",
     "hero_image_credit": "도봉구 도봉산 실제 풍경 사진 (출처: 네이버블로그)",
     "source_url": "http://blog.naver.com/naava_kr/222910087265",
     "width": 966,
-    "height": 725
+    "height": 725,
+    "gallery": [
+      {
+        "url": "/images/regions/region-dobong.jpg",
+        "alt": "dobong 대표 동네 풍경 1",
+        "credit": "도봉구 도봉산 실제 풍경 사진 (출처: 네이버블로그)",
+        "source_url": "http://blog.naver.com/naava_kr/222910087265"
+      },
+      {
+        "url": "/images/regions/region-dobong-2.jpg",
+        "alt": "도봉산 계곡 탐방로",
+        "credit": "도봉산 계곡 탐방로 실제 사진 (출처: 티스토리)",
+        "source_url": "https://poortour.tistory.com/70"
+      },
+      {
+        "url": "/images/regions/region-dobong-3.jpg",
+        "alt": "도봉구 서울창포원",
+        "credit": "도봉구 서울창포원 실제 사진 (출처: 네이버블로그)",
+        "source_url": "http://blog.naver.com/cojs/224186821135"
+      }
+    ]
   },
   "gangbuk": {
     "hero_image_url": "/images/regions/region-gangbuk.jpg",
     "hero_image_credit": "gangbuk 실제 동네 풍경 사진 (출처: 네이버블로그)",
     "source_url": "https://blog.naver.com/h_jiniramp/224475619516",
     "width": 1280,
-    "height": 961
+    "height": 961,
+    "gallery": [
+      {
+        "url": "/images/regions/region-gangbuk.jpg",
+        "alt": "gangbuk 대표 동네 풍경 1",
+        "credit": "gangbuk 실제 동네 풍경 사진 (출처: 네이버블로그)",
+        "source_url": "https://blog.naver.com/h_jiniramp/224475619516"
+      },
+      {
+        "url": "/images/regions/region-gangbuk-2.jpg",
+        "alt": "강북구 4.19 카페거리",
+        "credit": "강북구 4.19 카페거리 실제 사진 (출처: 네이버블로그)",
+        "source_url": "http://blog.naver.com/haechiseoul/222704060330"
+      },
+      {
+        "url": "/images/regions/region-gangbuk-3.jpg",
+        "alt": "강북구 북서울꿈의숲",
+        "credit": "강북구 북서울꿈의숲 실제 사진 (출처: 네이버블로그)",
+        "source_url": "http://blog.naver.com/road180701/222245947542"
+      }
+    ]
   },
   "jungnang": {
     "hero_image_url": "/images/regions/region-jungnang.jpg",
     "hero_image_credit": "중랑구 중랑천 실제 풍경 사진 (출처: 티스토리)",
     "source_url": "https://mehoo.tistory.com/268",
     "width": 1400,
-    "height": 933
+    "height": 933,
+    "gallery": [
+      {
+        "url": "/images/regions/region-jungnang.jpg",
+        "alt": "jungnang 대표 동네 풍경 1",
+        "credit": "중랑구 중랑천 실제 풍경 사진 (출처: 티스토리)",
+        "source_url": "https://mehoo.tistory.com/268"
+      },
+      {
+        "url": "/images/regions/region-jungnang-2.jpg",
+        "alt": "중랑구 중랑장미공원",
+        "credit": "중랑구 중랑장미공원 실제 사진 (출처: 티스토리)",
+        "source_url": "https://rose-singer.tistory.com/7799947"
+      },
+      {
+        "url": "/images/regions/region-jungnang-3.jpg",
+        "alt": "중랑구 용마폭포공원",
+        "credit": "중랑구 용마폭포공원 실제 사진 (출처: 문화일보)",
+        "source_url": "https://v.daum.net/v/20260529064618607"
+      }
+    ]
   },
   "seongbuk": {
     "hero_image_url": "/images/regions/region-seongbuk.jpg",
     "hero_image_credit": "seongbuk 실제 동네 풍경 사진 (출처: 트레벌데일리)",
     "source_url": "https://www.traveldaily.co.kr/news/articleView.html?idxno=70840",
     "width": 1280,
-    "height": 853
+    "height": 853,
+    "gallery": [
+      {
+        "url": "/images/regions/region-seongbuk.jpg",
+        "alt": "seongbuk 대표 동네 풍경 1",
+        "credit": "seongbuk 실제 동네 풍경 사진 (출처: 트레벌데일리)",
+        "source_url": "https://www.traveldaily.co.kr/news/articleView.html?idxno=70840"
+      },
+      {
+        "url": "/images/regions/region-seongbuk-2.jpg",
+        "alt": "성북구 한양도성 성곽길",
+        "credit": "성북구 한양도성 성곽길 실제 풍경 사진 (출처: 네이버블로그)",
+        "source_url": "http://blog.naver.com/tournoteblog/220469589635"
+      },
+      {
+        "url": "/images/regions/region-seongbuk-3.jpg",
+        "alt": "성북구 성북동 길상사",
+        "credit": "성북구 성북동 길상사 실제 풍경 사진 (출처: Daum카페)",
+        "source_url": "https://cafe.daum.net/beautiful5060/9xsT/18925"
+      }
+    ]
   }
 }

@@ -564,7 +564,8 @@ def seed_database(db: Session) -> Dict[str, Any]:
                 rid = item.get("restaurant_id")
                 if not rid or not db.get(Restaurant, rid):
                     continue
-                img_id = f"img-real-{rid}"
+                order = int(item.get("display_order", 1))
+                img_id = f"img-real-{rid}-{order}"
                 if not db.get(RestaurantImage, img_id):
                     db.add(
                         RestaurantImage(
@@ -573,13 +574,13 @@ def seed_database(db: Session) -> Dict[str, Any]:
                             url=item["url"],
                             image_type=item.get("image_type", "food"),
                             alt_text=item.get("alt_text") or f"{rid} 실제 매장 사진",
-                            is_primary=True,
+                            is_primary=(order == 1),
                             source_name=item.get("source_name") or "카카오 이미지 검색",
                             author=item.get("author"),
                             license_type=item.get("license_type") or "외부 출처 참고 이미지",
                             verified_at=item.get("verified_at", "2026-11-24"),
                             is_ai_generated=bool(item.get("is_ai_generated", False)),
-                            display_order=1,
+                            display_order=order,
                         )
                     )
         except Exception:

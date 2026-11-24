@@ -28,6 +28,7 @@ export const CollectionRestaurantGrid: React.FC<CollectionRestaurantGridProps> =
             oneLineIntro: r.one_line_intro,
             priceRange: r.price_range_label,
             imageUrl: r.primary_image?.url || null,
+            images: r.images,
             highlights: r.highlights,
           }}
           isSaved={hydrated ? isSaved(r.id) : false}

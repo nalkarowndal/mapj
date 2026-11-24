@@ -8,6 +8,7 @@ import { SiteShell } from "@/components/layout/SiteShell";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { RegionRestaurantsClient } from "@/components/regions/RegionRestaurantsClient";
 import { RegionalMapToggle } from "@/components/regions/RegionalMapToggle";
+import { ImageSlider } from "@/components/ui/ImageSlider";
 import { getRegionDetail } from "@/lib/api/client";
 
 export const dynamic = "force-dynamic";
@@ -94,21 +95,30 @@ export default async function RegionDetailPage({ params }: RegionPageProps) {
             </div>
 
             <div className="lg:col-span-6">
-              <figure className="space-y-2">
-                <div className="relative aspect-[4/3] w-full rounded-[16px] overflow-hidden bg-[var(--bg-subtle)] border border-[var(--border-default)]">
-                  <Image
-                    src={region.hero_image_url}
-                    alt={`${region.name} 미식 대표 이미지`}
-                    fill
-                    priority
-                    sizes="(max-width: 1024px) 100vw, 50vw"
-                    className="object-cover"
-                  />
-                </div>
-                <figcaption className="text-[12px] text-[var(--text-muted)] text-right">
-                  {region.hero_image_credit}
-                </figcaption>
-              </figure>
+              <ImageSlider
+                slides={
+                  region.gallery_images && region.gallery_images.length > 0
+                    ? region.gallery_images.map((g) => ({
+                        url: g.url,
+                        alt: g.alt || `${region.name} 실제 동네 풍경`,
+                        credit: g.credit,
+                      }))
+                    : [
+                        {
+                          url: region.hero_image_url,
+                          alt: `${region.name} 미식 대표 이미지`,
+                          credit: region.hero_image_credit,
+                        },
+                      ]
+                }
+                aspectClassName="aspect-[4/3]"
+                roundedClassName="rounded-[16px] border border-[var(--border-default)]"
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                priority
+                showCounter
+                showThumbnails
+                showCaption
+              />
             </div>
           </div>
         </div>

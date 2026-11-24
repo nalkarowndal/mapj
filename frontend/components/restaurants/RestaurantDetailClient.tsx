@@ -17,6 +17,7 @@ import {
 import { RestaurantDetail } from "@/lib/types/gourmet";
 import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
+import { ImageSlider, SliderImage } from "../ui/ImageSlider";
 import { RestaurantCard } from "./RestaurantCard";
 import { useBookmarks } from "@/features/bookmarks/useBookmarks";
 
@@ -140,8 +141,26 @@ export const RestaurantDetailClient: React.FC<RestaurantDetailClientProps> = ({
     restaurant.kakao_url ||
     `https://map.kakao.com/link/to/${encodeURIComponent(restaurant.name)},${restaurant.lat},${restaurant.lng}`;
 
-  const primarySrc =
-    restaurant.primary_image?.url || "/images/placeholder-table.svg";
+  const gallerySlides: SliderImage[] =
+    restaurant.images && restaurant.images.length > 0
+      ? restaurant.images.map((img, i) => ({
+          url: img.url,
+          alt: img.alt || `${restaurant.name} 사진 ${i + 1}`,
+          credit: `사진 출처: ${img.source_name || "동북미식 등록 사진"}${
+            img.license_type
+              ? ` · ${img.license_type.split("(")[0].trim()}`
+              : ""
+          }`,
+        }))
+      : [
+          {
+            url: restaurant.primary_image?.url || "/images/placeholder-table.svg",
+            alt: restaurant.primary_image?.alt || `${restaurant.name} 대표 사진`,
+            credit: restaurant.primary_image
+              ? `사진 출처: ${restaurant.primary_image.source_name || "동북미식 등록 사진"}`
+              : "저작권 및 이용 권한이 확인된 실제 매장 사진이 확보되지 않아 공통 플레이스홀더를 표시합니다.",
+          },
+        ];
 
   return (
     <div className="space-y-14">
@@ -195,33 +214,18 @@ export const RestaurantDetailClient: React.FC<RestaurantDetailClientProps> = ({
             </p>
           </div>
 
-          {/* Primary Photo & Gallery Area */}
-          <section aria-label="매장 사진" className="space-y-3">
-            <div className="relative aspect-[4/3] w-full rounded-[16px] overflow-hidden bg-[var(--bg-subtle)] border border-[var(--border-default)]">
-              <Image
-                src={primarySrc}
-                alt={
-                  restaurant.primary_image?.alt ||
-                  `${restaurant.name} 대표 사진`
-                }
-                fill
-                priority
-                sizes="(max-width: 1024px) 100vw, 66vw"
-                className="object-cover"
-              />
-            </div>
-            {restaurant.primary_image ? (
-              <p className="text-[12px] text-[var(--text-muted)]">
-                사진 출처: {restaurant.primary_image.source_name || "동북미식 등록 사진"}
-                {restaurant.primary_image.license_type
-                  ? ` · ${restaurant.primary_image.license_type.split("(")[0].trim()}`
-                  : ""}
-              </p>
-            ) : (
-              <p className="text-[13px] text-[var(--text-muted)]">
-                저작권 및 이용 권한이 확인된 실제 매장 사진이 확보되지 않아 공통 플레이스홀더를 표시합니다.
-              </p>
-            )}
+          {/* Primary Photo & Multi-Image Slider Gallery Area */}
+          <section aria-label="매장 사진 갤러리" className="space-y-3">
+            <ImageSlider
+              slides={gallerySlides}
+              aspectClassName="aspect-[4/3]"
+              roundedClassName="rounded-[16px] border border-[var(--border-default)]"
+              sizes="(max-width: 1024px) 100vw, 66vw"
+              priority
+              showCounter
+              showThumbnails
+              showCaption
+            />
           </section>
 
           {/* Editorial Introduction & Recommendation Note */}
@@ -521,6 +525,7 @@ export const RestaurantDetailClient: React.FC<RestaurantDetailClientProps> = ({
                   oneLineIntro: rel.one_line_intro,
                   priceRange: rel.price_range_label,
                   imageUrl: rel.primary_image?.url || null,
+                  images: rel.images,
                   highlights: rel.highlights,
                 }}
                 isSaved={hydrated ? isSaved(rel.id) : false}
