@@ -195,7 +195,7 @@ COLLECTIONS_SEED: List[Dict[str, Any]] = [
         "description": "부모님 생신이나 주말 가족 모임에 부담 없이 방문할 수 있는 한우, 한정식, 수제 두부, 쌈밥 전문점을 엄선했습니다.",
         "hero_image_url": "/images/editorial/theme-family.jpg",
         "is_featured": True,
-        "restaurant_ids": ["db-02", "gb-03", "nw-02", "jn-01", "sb-06", "db-01"],
+        "restaurant_ids": ["db-02", "gb-05", "nw-02", "jn-01", "sb-06", "db-01"],
     },
     {
         "slug": "solo-comfort-meals",
@@ -204,7 +204,7 @@ COLLECTIONS_SEED: List[Dict[str, Any]] = [
         "description": "공릉동 멸치국수, 수유동 가락우동, 면목동 손칼국수, 창동 수제 돈까스까지 혼자서도 편하게 들르기 좋은 로컬 식당들입니다.",
         "hero_image_url": "/images/editorial/theme-solo.jpg",
         "is_featured": True,
-        "restaurant_ids": ["nw-04", "gb-05", "jn-05", "db-03", "sb-01", "jn-02"],
+        "restaurant_ids": ["nw-04", "gb-03", "jn-05", "db-03", "sb-01", "jn-02"],
     },
     {
         "slug": "mountain-after-meal",
@@ -213,7 +213,7 @@ COLLECTIONS_SEED: List[Dict[str, Any]] = [
         "description": "도봉산 입구 설렁탕과 4.19 자락 약초 한정식, 들깨수제비 등 산행 뒤 기력을 채워주는 식당을 모았습니다.",
         "hero_image_url": "/images/editorial/region-dobong.jpg",
         "is_featured": False,
-        "restaurant_ids": ["db-01", "gb-01", "gb-03", "gb-04", "nw-02"],
+        "restaurant_ids": ["db-01", "gb-01", "gb-05", "gb-04", "nw-02"],
     },
     {
         "slug": "budget-everyday",
@@ -222,7 +222,7 @@ COLLECTIONS_SEED: List[Dict[str, Any]] = [
         "description": "동네 주민들이 평일 점심과 저녁에 꾸준히 찾는 합리적인 가격의 실속 맛집입니다.",
         "hero_image_url": "/images/editorial/theme-solo.jpg",
         "is_featured": False,
-        "restaurant_ids": ["nw-04", "gb-05", "jn-05", "db-05", "nw-01", "jn-02"],
+        "restaurant_ids": ["nw-04", "gb-03", "jn-05", "db-05", "nw-01", "jn-02"],
     },
     {
         "slug": "seongbuk-date-walk",
@@ -276,9 +276,9 @@ RESTAURANT_FEATURES_MAP: Dict[str, List[str]] = {
     "db-05": ["solo_dining", "takeout"],
     "gb-01": ["family", "solo_dining"],
     "gb-02": ["date", "parking", "takeout"],
-    "gb-03": ["family", "group", "parking", "reservation"],
+    "gb-03": ["solo_dining", "takeout"],
     "gb-04": ["date", "family", "parking"],
-    "gb-05": ["solo_dining", "takeout"],
+    "gb-05": ["family", "group", "parking", "reservation"],
     "jn-01": ["family", "group"],
     "jn-02": ["solo_dining", "parking"],
     "jn-03": ["group"],

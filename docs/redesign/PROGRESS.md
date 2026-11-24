@@ -16,7 +16,7 @@
 | **P3** | 맛집 탐색 및 상세 페이지 구현 | **PASS** | 2026-11-24 | `/restaurants`(URL searchParams·상세필터·정렬·페이지네이션), `/restaurants/[slug]`(JSON-LD·미니맵·방문정보), `/collections/*`, `/saved`(LocalStorage), `/about`, `/feedback`, `sitemap.xml`, `robots.txt` 및 전체 E2E PASS |
 | **P4** | 지도 및 AI 추천 기능 고도화 | **PASS** | 2026-11-24 | `/map`(Kakao Maps SDK 7단계 라이프사이클·`CustomOverlay`·데스크톱 38:62·모바일 바텀시트·장애 fallback), `/concierge`(DB 선조회·실존 ID 제한 Groq AI·환각 차단·기록 아코디언) 및 지도 회귀+AI 신뢰성 QA PASS |
 | **P5** | 데이터베이스 및 관리자 시스템 | **PASS** | 2026-11-24 | SQLAlchemy 2.0 20개 테이블(PostgreSQL DDL·Alembic·백업/복구), 110건 카카오 실존 통합 DB, 서버 인증 `/admin` CRUD·이미지·API 설정 이전 및 보안/QA PASS |
-| **P6** | 자동 QA 및 최종 품질 고도화 | 대기 (사용자 승인 후 착수) | - | 9대 해상도 Playwright QA, 보안/SEO/성능 검수, README |
+| **P6** | 자동 QA 및 최종 품질 고도화 | **PASS** | 2026-11-24 | 통합 6대 도메인 QA 스위트(`qa/run_dongbuk_qa_suite.py`), 9대 해상도(54개 조합)·보안·접근성·SEO·프로덕션 CWV 전 항목 PASS, `QA_FINAL_REPORT.md`·`README.md` 완성 |
 
 ---
 
@@ -59,4 +59,15 @@
   - 독립 레이아웃 `/admin`, `/admin/login` 구축(대시보드, 맛집 CRUD + `409 Conflict` 중복 차단 + 실시간 카카오 재검증, Pillow 시그니처/5MB 검증 이미지 업로드, 지역/테마, 제보/검증 로그, 외부 API 설정 이전).
 - **문서 산출물 및 QA**:
   - `DB_ERD.md`, `db/postgresql_schema.sql`, `ADMIN_API_SPEC.md`, `ADMIN_MANUAL.md`, `DATA_COLLECTION_REPORT.md` 작성, `next build`(18개 라우트) 및 보안/CRUD/Playwright `/admin` 시각 QA 스크린샷 4종 육안 확인 PASS.
+
+## P6 완료 기록 (2026-11-24)
+
+- **통합 자동 QA 스위트 구축 및 프로덕션 실측 (`qa/run_dongbuk_qa_suite.py`)**:
+  - Next.js 프로덕션 빌드(`next start`, 18개 라우트) + FastAPI v3.1(110건 실존 검증 DB) 대상으로 6개 도메인(기능/16개 공개 라우트+404, 9대 해상도 54개 조합 반응형·시각 QA, 지도 회귀+AI 신뢰성/환각 차단, 보안·미인증 `401`·관리자 격리, WCAG 2.2 AA 기초 접근성·SEO, 프로덕션 Core Web Vitals) 전수 실행.
+- **발견 결함 수정 및 재검증**:
+  - `gb-03`/`gb-05` 특성·큐레이션 매핑 뒤바뀜 및 `"한정식"` 예산 과도 제한 수정 → AI 예시 질문 5/5 `live_ai=5/5` + 환각 트랩 2/2 0건 반환 PASS.
+  - `/map` 페이지 스크린리더용 단일 `<h1>` 추가 → 16개 공개 페이지 전원 접근성·SEO PASS.
+- **최종 성과 및 문서화**:
+  - 프로덕션 CWV 전 페이지 우수 판정(LCP `220~428ms`, CLS `0.0009~0.0960`), 9대 해상도(`320×700` ~ `1920×1080`) 오버플로우 0건·깨진 이미지 0건, 스크린샷 9종 육안 검수 완료(`docs/redesign/screenshots/p6_final/`).
+  - `docs/redesign/QA_FINAL_REPORT.md`, `docs/redesign/qa_final_metrics.json`, 루트 `README.md`, `frontend/.env.example` 완성 → `feature/dongbuk-table-redesign` 최종 커밋 완료(`main` 병합은 사용자 승인 대기).
 

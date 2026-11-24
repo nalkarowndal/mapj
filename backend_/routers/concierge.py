@@ -93,7 +93,7 @@ def _parse_intent(req: ConciergeRecommendRequest) -> Dict[str, Any]:
             budget = "10000_20000"
         elif any(k in q_lower for k in ["2만원", "3만원"]):
             budget = "20000_40000"
-        elif any(k in q_lower for k in ["4만원", "고급", "한정식"]):
+        elif any(k in q_lower for k in ["4만원", "고급"]):
             budget = "over_40000"
 
     features: List[str] = []
@@ -272,6 +272,17 @@ def _search_candidates(intent: Dict[str, Any], raw_query: str) -> List[Dict[str,
             )
             if res2b["items"]:
                 return res2b["items"]
+
+        # Step 3c: Keep region + category (relaxing budget/features)
+        if intent["category"]:
+            res2c = query_restaurants(
+                region=intent["region"],
+                category=intent["category"],
+                page=1,
+                page_size=4,
+            )
+            if res2c["items"]:
+                return res2c["items"]
 
     # Step 4: Keyword search directly on verified catalog
     res3 = query_restaurants(

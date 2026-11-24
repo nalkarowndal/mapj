@@ -377,6 +377,7 @@ export const MapExplorer: React.FC<MapExplorerProps> = ({
 
   return (
     <div className="flex flex-col h-[calc(100vh-68px-62px)] md:h-[calc(100vh-72px)] w-full overflow-hidden bg-[var(--bg-main)]">
+      <h1 className="sr-only">동북미식 서울 동북권 맛집 지도 탐색</h1>
       {/* Top Search & Region/Category Bar */}
       <div className="shrink-0 bg-[var(--bg-surface)] border-b border-[var(--border-default)] px-4 sm:px-6 py-3 space-y-2.5 z-20">
         <div className="flex flex-col lg:flex-row lg:items-center gap-2.5">
