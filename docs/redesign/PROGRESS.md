@@ -12,8 +12,8 @@
 |---|---|---|---|---|
 | **P0** | 기존 분석 및 신규 서비스 설계 | **PASS** | 2026-11-24 | 감사·설계 문서 6종, `PROGRESS.md`, Baseline 스크린샷 4종 확보 |
 | **P1** | 브랜드 및 디자인 시스템 구축 | **PASS** | 2026-11-24 | `DESIGN_SYSTEM.md`, `VISUAL_DIRECTION.md`, `COMPONENT_GUIDE.md`, `ASSET_MANIFEST.md`, 에디토리얼 이미지 10종 + 플레이스홀더 SVG, 공통 UI 12종, 4개 해상도 시각 QA PASS |
-| **P2** | 홈페이지 및 지역별 페이지 구현 | 대기 (사용자 승인 후 착수) | - | `/`, `/regions`, `/regions/[slug]` 5개 자치구 |
-| **P3** | 맛집 탐색 및 상세 페이지 구현 | 대기 | - | `/restaurants`, `/restaurants/[slug]`, `/collections/*`, `/saved`, `/feedback`, `/about` |
+| **P2** | 홈페이지 및 지역별 페이지 구현 | **PASS** | 2026-11-24 | 백엔드 단일 Public API(28건 100% 카카오 실존 검증), 신규 홈페이지(`/`), `/regions`, 5개 자치구(`/regions/[slug]`) 구현 및 4개 해상도+전 페이지 시각 QA PASS |
+| **P3** | 맛집 탐색 및 상세 페이지 구현 | 대기 (사용자 승인 후 착수) | - | `/restaurants`, `/restaurants/[slug]`, `/collections/*`, `/saved`, `/feedback`, `/about` |
 | **P4** | 지도 및 AI 추천 기능 고도화 | 대기 | - | `/map`, `/concierge` |
 | **P5** | 데이터베이스 및 관리자 시스템 | 대기 | - | 19개 테이블 DB, 데이터 확충/검수, `/admin` + 서버 인증 + API 설정 이전 |
 | **P6** | 자동 QA 및 최종 품질 고도화 | 대기 | - | 9대 해상도 Playwright QA, 보안/SEO/성능 검수, README |

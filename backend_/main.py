@@ -24,13 +24,14 @@ from places_database import (
     search_kakao_local_api,
 )
 from settings_manager import settings_mgr
+from routers.public import router as public_gourmet_router
 
 ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000").split(",")
 
 app = FastAPI(
-    title="맛탐정 동북 (Gourmet Guide API)",
-    description="서울 동북권 5대 자치구 맛집 소개·큐레이션 및 AI 미식 컨시어지 백엔드",
-    version="2.2.0",
+    title="동북미식 (DONGBUK TABLE API)",
+    description="서울 동북권 5대 자치구 맛집 소개·큐레이션 및 AI 미식 추천 백엔드",
+    version="3.0.0",
 )
 
 app.add_middleware(
@@ -40,6 +41,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(public_gourmet_router)
 
 _cached_groq_key: Optional[str] = None
 _cached_groq_client: Optional[Groq] = None
